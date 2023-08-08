@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Polina Timonina](https://up.htmlacademy.ru/ecmascript/21/user/2009235).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Андреев](https://htmlacademy.ru/profile/id812127).
 
 ---
 
