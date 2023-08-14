@@ -1,15 +1,14 @@
-
 import {render} from '../render.js';
-import TripSortView from '../view/trip-sort-view.js';
-import TripEventsListView from '../view/trip-events-list-view.js';
-import TripEventItemView from '../view/trip-event-item-view.js';
-import TripEventEditView from '../view/trip-event-edit-view.js';
+import SortView from '../view/sort-view.js';
+import EventsListView from '../view/events-list-view.js';
+import EventItemView from '../view/event-item-view.js';
+import EventEditView from '../view/event-edit-view.js';
 
-const TRIP_ITEM_COUNT = 3;
+const EVENTS_ITEM_COUNT = 3;
 
 export default class BoardPresenter {
-  sortComponent = new TripSortView();
-  eventsListComponent = new TripEventsListView();
+  sortComponent = new SortView();
+  eventsListComponent = new EventsListView();
 
   constructor({boardContainer}) {
     this.boardContainer = boardContainer;
@@ -19,10 +18,10 @@ export default class BoardPresenter {
   init() {
     render(this.sortComponent, this.boardContainer);
     render(this.eventsListComponent, this.boardContainer);
-    render(new TripEventEditView(), this.eventsListComponent.getElement());
+    render(new EventEditView(), this.eventsListComponent.getElement());
 
-    for (let i = 0; i < TRIP_ITEM_COUNT; i++) {
-      render(new TripEventItemView(), this.eventsListComponent.getElement());
+    for (let i = 0; i < EVENTS_ITEM_COUNT; i++) {
+      render(new EventItemView(), this.eventsListComponent.getElement());
     }
   }
 }
