@@ -4,6 +4,8 @@ import InfoView from './view/info-view.js';
 import {render, RenderPosition} from './render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 
+import {createEvent} from './mock/events.js';
+
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
@@ -17,3 +19,5 @@ render(new FiltersView(), tripFiltersElement);
 render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 
 boardPresenter.init();
+
+console.log(createEvent());
