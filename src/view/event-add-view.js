@@ -1,5 +1,15 @@
 import {createElement} from '../render.js';
 
+const BLANK_EVENT = {
+  basePrice: '',
+  dateFrom: new Date().toLocaleString(),
+  dateTo: new Date().toLocaleString(),
+  destination: '1bfa5cb75-a1fe-4b77-a83c-0e528e910e04',
+  isFavorite: false,
+  offers: [],
+  type: 'taxi'
+};
+
 function createEventAddTemplate() {
   return (
     `<li class="trip-events__item">
@@ -168,8 +178,12 @@ function createEventAddTemplate() {
 }
 
 export default class EventAddView {
+  constructor({event = BLANK_EVENT}) {
+    this.event = event;
+  }
+
   getTemplate() {
-    return createEventAddTemplate();
+    return createEventAddTemplate(this.event);
   }
 
   getElement() {

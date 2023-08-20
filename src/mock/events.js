@@ -2,9 +2,11 @@ import {
   getRandomArrayElement,
   getRandomInteger,
   getRandomBoolean,
-  createRandomIdFromRangeGenerator,
+  createRandomIntegerFromRangeGenerator,
   createdIdGenerator
 } from '../utils.js';
+import {eventDestinations} from './destinations.js';
+import {offersData} from './offers.js';
 
 const eventDatesFrom = [
   '2023-07-10T20:55:56.845Z',
@@ -20,52 +22,35 @@ const eventDatesTo = [
   '2023-08-10T23:55:56.845Z',
 ];
 
-const eventDestinations = [
-  'Geneva',
-  'Chamonix',
-  'Amsterdam',
-  'Paris',
-  'Balashikha',
-];
+const generateEventID = createdIdGenerator();
 
-const eventTypes = [
-  'taxi',
-  'bus',
-  'train',
-  'ship',
-  'check-in',
-  'sightseeing',
-  'restaurant',
-];
+let offerType;
 
-const eventOffers = [
-  'Add something +€ 10',
-  'Add something +€ 30',
-  'Add something +€ 50',
-  'Add something +€ 70',
-  'Add something +€ 100',
-];
+const addRandomnType = () => {
+  offerType = getRandomArrayElement(offersData).type;
+  return offerType;
+};
 
-const generateID = createdIdGenerator();
-
-const generateOffers = () => {
-  const getRandomEventIndex = createRandomIdFromRangeGenerator(0, eventOffers.length - 1);
-  const getRandomEventItem = () => eventOffers[getRandomEventIndex()];
-  return Array.from({length: getRandomInteger(0, eventOffers.length - 1)}, getRandomEventItem);
+const generateOffersID = (type) => {
+  const randomOffer = offersData.find((offer) => offer.type === type);
+  const typeOffers = randomOffer.offers;
+  if (!typeOffers.length) {
+    return [];
+  }
+  const getRandomEventIndex = createRandomIntegerFromRangeGenerator(0, typeOffers.length - 1);
+  const getRandomEventItem = () => typeOffers[getRandomEventIndex()].id;
+  return Array.from({length: getRandomInteger(0, typeOffers.length - 1)}, getRandomEventItem);
 };
 
 const createEvent = () => ({
-  id: generateID(),
+  id: generateEventID(),
   basePrice: getRandomInteger(1000, 10000),
   dateFrom: new Date(getRandomArrayElement(eventDatesFrom)),
   dateTo: new Date(getRandomArrayElement(eventDatesTo)),
-  destination: getRandomArrayElement(eventDestinations),
+  destination: getRandomArrayElement(eventDestinations).name,
   isFavorite: getRandomBoolean(),
-  offers: generateOffers(),
-  type: getRandomArrayElement(eventTypes),
+  type: addRandomnType(),
+  offers: generateOffersID(offerType),
 });
 
-//const simularEvents = (count) => Array.from({length: count}, createEvent);
-
 export {createEvent};
-

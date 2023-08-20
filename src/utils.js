@@ -1,3 +1,13 @@
+import dayjs from 'dayjs';
+
+const DateTimeFormat = {
+  DATE: 'MMM DD',
+  TIME: 'HH:mm',
+  DATE_IN_ATRIBUT: 'DD-MM-YYYY',
+  DATE_TIME_IN_ATRIBUT: 'DD-MM-YYYYTHH:mm',
+  DATE_TIME_IN_INPUT: 'DD/MM/YYYY HH:mm',
+};
+
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
 const getRandomInteger = (min, max) => {
@@ -10,7 +20,7 @@ const getRandomInteger = (min, max) => {
 
 const getRandomBoolean = () => getRandomInteger(0, 1) === 1;
 
-const createRandomIdFromRangeGenerator = (min, max) => {
+const createRandomIntegerFromRangeGenerator = (min, max) => {
   const previousValues = [];
 
   return function () {
@@ -35,10 +45,16 @@ const createdIdGenerator = () => {
   };
 };
 
+function humanizeEventDueDate(dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) {
+  return dueDate ? dayjs(dueDate).format(format) : '';
+}
+
 export {
   getRandomArrayElement,
   getRandomInteger,
   getRandomBoolean,
-  createRandomIdFromRangeGenerator,
-  createdIdGenerator
+  createRandomIntegerFromRangeGenerator,
+  createdIdGenerator,
+  humanizeEventDueDate,
+  DateTimeFormat,
 };

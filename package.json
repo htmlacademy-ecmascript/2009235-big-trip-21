@@ -28,6 +28,9 @@
     "@babel/preset-env": "7.21.4",
     "babel-loader": "9.1.2"
   },
+  "dependencies": {
+    "dayjs": "1.11.7"
+  },
   "engines": {
     "node": "18"
   }
