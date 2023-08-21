@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import {eventTypesSrc} from './const.js';
 
 const DateTimeFormat = {
   DATE: 'MMM DD',
@@ -24,7 +23,7 @@ const getRandomBoolean = () => getRandomInteger(0, 1) === 1;
 const createRandomIntegerFromRangeGenerator = (min, max) => {
   const previousValues = [];
 
-  return function () {
+  return () => {
     let currentValue = getRandomInteger(min, max);
     if (previousValues.length >= (max - min + 1)) {
       return null;
@@ -46,13 +45,7 @@ const createdIdGenerator = () => {
   };
 };
 
-function humanizeEventDueDate(dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) {
-  return dueDate ? dayjs(dueDate).format(format) : '';
-}
-
-function getIconSrcByType (type) {
-  return eventTypesSrc.find((eventTypeSrc) => eventTypeSrc.type.toLowerCase() === type.toLowerCase()).iconSrc;
-}
+const humanizeEventDueDate = (dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) => dueDate ? dayjs(dueDate).format(format) : '';
 
 export {
   getRandomArrayElement,
@@ -62,5 +55,4 @@ export {
   createdIdGenerator,
   humanizeEventDueDate,
   DateTimeFormat,
-  getIconSrcByType,
 };

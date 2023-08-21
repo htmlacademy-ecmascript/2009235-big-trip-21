@@ -1,5 +1,5 @@
 import {createElement} from '../render.js';
-import {humanizeEventDueDate, DateTimeFormat, getIconSrcByType} from '../utils.js';
+import {humanizeEventDueDate, DateTimeFormat} from '../utils.js';
 
 function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
   return eventOffers.length ?
@@ -38,7 +38,7 @@ function createEventItemTemplate(event, offers) {
     <div class="event">
       <time class="event__date" datetime="${dateInAtribut}">${dateInContent}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="${getIconSrcByType(type)}" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${destination}</h3>
       <div class="event__schedule">
