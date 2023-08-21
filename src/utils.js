@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {eventTypesSrc} from './const.js';
 
 const DateTimeFormat = {
   DATE: 'MMM DD',
@@ -49,6 +50,10 @@ function humanizeEventDueDate(dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRI
   return dueDate ? dayjs(dueDate).format(format) : '';
 }
 
+function getIconSrcByType (type) {
+  return eventTypesSrc.find((eventTypeSrc) => eventTypeSrc.type.toLowerCase() === type.toLowerCase()).iconSrc;
+}
+
 export {
   getRandomArrayElement,
   getRandomInteger,
@@ -57,4 +62,5 @@ export {
   createdIdGenerator,
   humanizeEventDueDate,
   DateTimeFormat,
+  getIconSrcByType,
 };

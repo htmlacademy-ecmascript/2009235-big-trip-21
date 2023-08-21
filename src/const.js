@@ -1,39 +1,39 @@
 
 const eventTypesSrc = [
   {
-    name: 'taxi',
+    type: 'taxi',
     iconSrc: '/img/icons/taxi.png',
   },
   {
-    name: 'bus',
+    type: 'bus',
     iconSrc: '/img/icons/bus.png',
   },
   {
-    name: 'train',
+    type: 'train',
     iconSrc: '/img/icons/train.png',
   },
   {
-    name: 'ship',
+    type: 'ship',
     iconSrc: '/img/icons/ship.png',
   },
   {
-    name: 'drive',
+    type: 'drive',
     iconSrc: '/img/icons/drive.png',
   },
   {
-    name: 'flight',
+    type: 'flight',
     iconSrc: '/img/icons/flight.png',
   },
   {
-    name: 'check-in',
+    type: 'check-in',
     iconSrc: '/img/icons/check-in.png',
   },
   {
-    name: 'sightseeing',
+    type: 'sightseeing',
     iconSrc: '/img/icons/sightseeing.png',
   },
   {
-    name: 'restaurant',
+    type: 'restaurant',
     iconSrc: '/img/icons/restaurant.png',
   }
 ];

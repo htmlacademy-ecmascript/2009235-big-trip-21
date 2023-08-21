@@ -1,10 +1,10 @@
 import {createElement} from '../render.js';
-import {humanizeEventDueDate, DateTimeFormat} from '../utils.js';
+import {humanizeEventDueDate, DateTimeFormat, getIconSrcByType} from '../utils.js';
 
 const BLANK_EVENT = {
   basePrice: '',
-  dateFrom: new Date().toLocaleString(),
-  dateTo: new Date().toLocaleString(),
+  dateFrom: new Date(),
+  dateTo: new Date(),
   destination: 'Amsterdam',
   isFavorite: false,
   offers: [],
@@ -55,8 +55,8 @@ function createEventOffersTemplate(eventAllOffers, eventOffers) {
       ${eventAllOffers.map((eventAllOffer) => {
     const checked = eventOffers.find((eventOffer) => eventOffer === eventAllOffer.id);
     return `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked ? 'checked' : ''}>
-        <label class="event__offer-label" for="event-offer-luggage-1">
+        <input class="event__offer-checkbox  visually-hidden" id="${eventAllOffer.title}" type="checkbox" name="${eventAllOffer.title}" ${checked ? 'checked' : ''}>
+        <label class="event__offer-label" for="${eventAllOffer.title}">
           <span class="event__offer-title">${eventAllOffer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${eventAllOffer.price}</span>
@@ -86,7 +86,7 @@ function createEventEditTemplate(event, destinations, offers) {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="${getIconSrcByType(type)}" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
