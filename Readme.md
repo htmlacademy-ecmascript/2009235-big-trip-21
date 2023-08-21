@@ -5,10 +5,6 @@
 
 ---
 
-* [ссылка на GitHub Pages](https://timonp.github.io/2009235-big-trip-21/)
-
----
-
 _Не удаляйте и не изменяйте папки и файлы:_
 _`.editorconfig`, `.gitattributes`._
 

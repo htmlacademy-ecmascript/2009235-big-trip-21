@@ -14,8 +14,7 @@
   "scripts": {
     "lint": "eslint src/",
     "build": "webpack --mode production",
-    "start": "webpack serve --mode development --open",
-    "deploy": "npm run build && gh-pages -d build"
+    "start": "webpack serve --mode development --open"
   },
   "devDependencies": {
     "eslint": "8.38.0",
@@ -27,8 +26,7 @@
     "html-webpack-plugin": "5.5.1",
     "@babel/core": "7.21.4",
     "@babel/preset-env": "7.21.4",
-    "babel-loader": "9.1.2",
-    "gh-pages": "^4.0.0"
+    "babel-loader": "9.1.2"
   },
   "dependencies": {
     "dayjs": "1.11.7"
