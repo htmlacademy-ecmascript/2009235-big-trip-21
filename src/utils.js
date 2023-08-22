@@ -39,7 +39,7 @@ const createRandomIntegerFromRangeGenerator = (min, max) => {
 const createdIdGenerator = () => {
   let i = 0;
 
-  return function () {
+  return () => {
     i += 1;
     return i;
   };
