@@ -2,8 +2,8 @@ import {createElement} from '../render.js';
 import {humanizeEventDueDate, DateTimeFormat} from '../utils.js';
 
 function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
-  return eventOffers.length ?
-    `<h4 class="visually-hidden">Offers:</h4>
+  if (eventOffers.length) {
+    return `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
     ${eventOffers.map((eventOffer) => {
     const foundOffer = eventTypeOffers.offers.find((eventTypeOffer) => eventTypeOffer.id === eventOffer);
@@ -13,14 +13,15 @@ function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
         <span class="event__offer-price">${foundOffer.price}</span>
     </li>`;
   }).join('')}
-  </ul>` : '';
+  </ul>`;
+  }
+
+  return '';
 }
 
 function createEventItemTemplate(event, offers) {
   const {basePrice, dateFrom, dateTo, destination, type, isFavorite} = event;
-  const allOffers = offers;
-  const eventOffers = event.offers;
-  const eventTypeOffers = allOffers.find((offer) => offer.type === type);
+  const eventTypeOffers = offers.find((offer) => offer.type === type);
 
   const startTimeInContent = humanizeEventDueDate(dateFrom, DateTimeFormat.TIME);
   const startTimeInAtribut = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_ATRIBUT);
@@ -52,7 +53,7 @@ function createEventItemTemplate(event, offers) {
       <p class="event__price">
         €&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
-      ${createEventItemOffersTemplate(eventOffers, eventTypeOffers)}
+      ${createEventItemOffersTemplate(event.offers, eventTypeOffers)}
       <button class="event__favorite-btn ${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">

@@ -30,8 +30,8 @@ function createEventEditButtonsTemplate() {
 }
 
 function createEventDestinationsTemplate(eventDestination) {
-  return eventDestination.pictures.length || eventDestination.description ?
-    `<section class="event__section  event__section--destination">
+  if (eventDestination.pictures.length || eventDestination.description) {
+    return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       ${eventDestination.description ?
     `<p class="event__destination-description">${eventDestination.description}</p>`
@@ -43,12 +43,15 @@ function createEventDestinationsTemplate(eventDestination) {
           ${eventDestination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}
         </div>
       </div>` : ''}
-    </section>` : '';
+    </section>`;
+  }
+
+  return '';
 }
 
 function createEventOffersTemplate(eventAllOffers, eventOffers) {
-  return eventAllOffers.length ?
-    `<section class="event__section  event__section--offers">
+  if (eventAllOffers.length) {
+    return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
     <div class="event__available-offers">
@@ -64,17 +67,17 @@ function createEventOffersTemplate(eventAllOffers, eventOffers) {
       </div>`;
   }).join('')}
     </div>
-  </section>` : '';
+  </section>`;
+  }
+
+  return '';
 }
 
 function createEventEditTemplate(event, destinations, offers) {
   const {basePrice, dateFrom, dateTo, destination, type, add} = event;
-  const allDestinations = destinations;
-  const allOffers = offers;
-  const eventOffers = event.offers;
 
-  const eventDestination = allDestinations.find((allDestinatio) => allDestinatio.name.toLowerCase() === destination.toLowerCase());
-  const eventAllOffers = allOffers.find((allOffer) => allOffer.type.toLowerCase() === type.toLowerCase()).offers;
+  const eventDestination = destinations.find((allDestinatio) => allDestinatio.name.toLowerCase() === destination.toLowerCase());
+  const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === type.toLowerCase()).offers;
 
   const startDateTimeInInput = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_INPUT);
   const endDateTimeInInput = humanizeEventDueDate(dateTo, DateTimeFormat.DATE_TIME_IN_INPUT);
@@ -173,7 +176,7 @@ function createEventEditTemplate(event, destinations, offers) {
         ${add ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
       </header>
       <section class="event__details">
-      ${createEventOffersTemplate(eventAllOffers, eventOffers)}
+      ${createEventOffersTemplate(eventAllOffers, event.offers)}
       ${createEventDestinationsTemplate(eventDestination)}
       </section>
     </form>
