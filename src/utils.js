@@ -47,6 +47,8 @@ const createdIdGenerator = () => {
 
 const humanizeEventDueDate = (dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) => dueDate ? dayjs(dueDate).format(format) : '';
 
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
 export {
   getRandomArrayElement,
   getRandomInteger,
@@ -55,4 +57,5 @@ export {
   createdIdGenerator,
   humanizeEventDueDate,
   DateTimeFormat,
+  isEscapeKey,
 };

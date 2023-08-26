@@ -189,14 +189,58 @@ export default class EventEditView extends AbstractView {
   #destinations = null;
   #offers = null;
 
-  constructor({event = BLANK_EVENT, destinations, offers}) {
+  #onEventEditSubmitButton = null;
+  #onEventEditResetButton = null;
+  #onEventEditRollupButton = null;
+
+  constructor({
+    event = BLANK_EVENT,
+    destinations,
+    offers,
+    onEventEditSubmitButton,
+    onEventEditResetButton,
+    onEventEditRollupButton,
+  }) {
     super();
     this.#event = event;
     this.#destinations = destinations;
     this.#offers = offers;
+
+    this.#onEventEditSubmitButton = onEventEditSubmitButton;
+    this.#onEventEditResetButton = onEventEditResetButton;
+    this.#onEventEditRollupButton = onEventEditRollupButton;
+
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.#clickSubmitButton);
+
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#clickResetButton);
+
+    if (!event.add) {
+      this.element
+        .querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#clickRollupButton);
+    }
   }
 
   get template() {
     return createEventEditTemplate(this.#event, this.#destinations, this.#offers);
   }
+
+  #clickSubmitButton = (evt) => {
+    evt.preventDefault();
+    this.#onEventEditSubmitButton(evt);
+  };
+
+  #clickResetButton = (evt) => {
+    evt.preventDefault();
+    this.#onEventEditResetButton(evt);
+  };
+
+  #clickRollupButton = (evt) => {
+    evt.preventDefault();
+    this.#onEventEditRollupButton(evt);
+  };
 }

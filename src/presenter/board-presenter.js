@@ -1,8 +1,10 @@
-import {render} from '../framework/render.js';
+import {render, replace, remove, RenderPosition} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import {isEscapeKey} from '../utils.js';
+
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
@@ -31,22 +33,73 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardContainer);
     render(this.#eventsListComponent, this.#boardContainer);
 
-    render(new EventEditView({
-      event: this.#boardEvents[0],
+    this.#boardEvents.forEach((event) => {
+      this.#renderEventItem(event);
+    });
+
+    /* New event */
+    /*const addEventButton = document.querySelector('.trip-main__event-add-btn');
+    addEventButton.addEventListener('click', () => this.#renderEventAdd());*/
+  }
+
+  #renderEventItem(event) {
+    const onDocumentKeydownEscape = (evt) => {
+      if (isEscapeKey(evt)) {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener('keydown', onDocumentKeydownEscape);
+      }
+    };
+
+    const eventItemComponent = new EventItemView({
+      event: event,
+      offers: this.#boardOffers,
+      onEventFavoriteButton: () => {},
+      onEventRollupButton: () => {
+        replaceCardToForm();
+        document.addEventListener('keydown', onDocumentKeydownEscape);
+      },
+    });
+
+    const eventEditComponent = new EventEditView({
+      event: event,
       destinations: this.#boardDestinations,
       offers: this.#boardOffers,
-    }), this.#eventsListComponent.element);
+      onEventEditSubmitButton: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', onDocumentKeydownEscape);
+      },
+      onEventEditResetButton: () => {
+        remove(eventEditComponent);
+      },
+      onEventEditRollupButton: () => {
+        replaceFormToCard();
+        document.removeEventListener('keydown', onDocumentKeydownEscape);
+      },
+    });
 
-    for (let i = 1; i < this.#boardEvents.length; i++) {
-      this.#renderEvent({
-        event: this.#boardEvents[i],
-        offers: this.#boardOffers,
-      });
+    function replaceCardToForm() {
+      replace(eventEditComponent, eventItemComponent);
     }
+
+    function replaceFormToCard() {
+      replace(eventItemComponent, eventEditComponent);
+    }
+
+    render(eventItemComponent, this.#eventsListComponent.element);
   }
 
-  #renderEvent(event) {
-    const eventComponent = new EventItemView(event);
-    render(eventComponent, this.#eventsListComponent.element);
-  }
+  /*#renderEventAdd() {
+    const eventAddComponent = new EventEditView({
+      destinations: this.#boardDestinations,
+      offers: this.#boardOffers,
+      onEventEditSubmitButton: () => {
+        remove(eventAddComponent);
+      },
+      onEventEditResetButton: () => {
+        remove(eventAddComponent);
+      },
+    });
+    render(eventAddComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+  }*/
 }
