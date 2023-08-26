@@ -1,7 +1,13 @@
 import {getDestinationsData} from '../mock/destinations.js';
 
 export default class DestinationsModel {
-  getDestinations() {
-    return getDestinationsData();
+  #destinations = null;
+
+  constructor() {
+    this.#destinations = getDestinationsData();
+  }
+
+  get destinations() {
+    return this.#destinations;
   }
 }

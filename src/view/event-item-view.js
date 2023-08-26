@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {humanizeEventDueDate, DateTimeFormat} from '../utils.js';
 
 function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
@@ -68,25 +68,17 @@ function createEventItemTemplate(event, offers) {
   );
 }
 
-export default class EventItemView {
+export default class EventItemView extends AbstractView {
+  #event = null;
+  #offers = null;
+
   constructor({event, offers}) {
-    this.event = event;
-    this.offers = offers;
+    super();
+    this.#event = event;
+    this.#offers = offers;
   }
 
-  getTemplate() {
-    return createEventItemTemplate(this.event, this.offers);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventItemTemplate(this.#event, this.#offers);
   }
 }
