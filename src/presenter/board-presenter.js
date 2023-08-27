@@ -1,9 +1,11 @@
-import {render, replace, remove, RenderPosition} from '../framework/render.js';
+import {render, replace, remove} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
-import {isEscapeKey} from '../utils.js';
+import EventsMessageView from '../view/events-message-view.js';
+import {isEscapeKey} from '../utils/common.js';
+import {MessageType} from '../const.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -30,16 +32,23 @@ export default class BoardPresenter {
     this.#boardDestinations = [...this.#destinationsModel.destinations];
     this.#boardOffers = [...this.#offersModel.offers];
 
+    this.#renderBoard();
+
+    //this.#addEventButtonClick();
+  }
+
+  #renderBoard() {
+    if (this.#boardEvents.every((event) => event.isArchive)) {
+      render(new EventsMessageView(MessageType.NO_EVENTS), this.#boardContainer);
+      return;
+    }
+
     render(this.#sortComponent, this.#boardContainer);
     render(this.#eventsListComponent, this.#boardContainer);
 
     this.#boardEvents.forEach((event) => {
       this.#renderEventItem(event);
     });
-
-    /* New event */
-    /*const addEventButton = document.querySelector('.trip-main__event-add-btn');
-    addEventButton.addEventListener('click', () => this.#renderEventAdd());*/
   }
 
   #renderEventItem(event) {
@@ -89,7 +98,12 @@ export default class BoardPresenter {
     render(eventItemComponent, this.#eventsListComponent.element);
   }
 
-  /*#renderEventAdd() {
+  /*#addEventButtonClick() {
+    const addEventButton = document.querySelector('.trip-main__event-add-btn');
+    addEventButton.addEventListener('click', () => this.#renderEventAdd());
+  }
+
+  #renderEventAdd() {
     const eventAddComponent = new EventEditView({
       destinations: this.#boardDestinations,
       offers: this.#boardOffers,

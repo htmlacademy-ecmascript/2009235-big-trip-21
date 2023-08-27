@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeEventDueDate, DateTimeFormat} from '../utils.js';
+import {humanizeEventDueDate} from '../utils/event.js';
+import {DateTimeFormat} from '../const.js';
 
 function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
   if (eventOffers.length) {

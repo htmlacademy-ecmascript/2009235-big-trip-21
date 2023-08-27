@@ -8,6 +8,8 @@ import EventsModel from './model/event-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 
+import {generateFilter} from './mock/filter.js';
+
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
@@ -21,7 +23,8 @@ const offersModel = new OffersModel();
 
 const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, eventsModel, destinationsModel, offersModel});
 
-render(new FiltersView(), tripFiltersElement);
+const filters = generateFilter();
+render(new FiltersView({filters}), tripFiltersElement);
 render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 
 boardPresenter.init();

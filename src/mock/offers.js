@@ -1,7 +1,7 @@
 import {
   getRandomInteger,
   createRandomIntegerFromRangeGenerator,
-} from '../utils.js';
+} from '../utils/common.js';
 
 const eventTypes = [
   'taxi',
