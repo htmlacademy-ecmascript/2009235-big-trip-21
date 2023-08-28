@@ -8,9 +8,12 @@ const isEventFuture = (dueDateFrom) => dueDateFrom && dayjs(dueDateFrom).isAfter
 const isEventPresent = (dueDateFrom, dueDateTo) => dueDateFrom && dueDateTo && dayjs(dueDateFrom).isSame(dayjs(), 'D') && dayjs(dueDateTo).isAfter(dayjs(), 'D');
 const isEventPast = (dueDateTo) => dueDateTo && dayjs(dueDateTo).isBefore(dayjs(), 'D');
 
+const getEventDuration = (dueDateFrom, dueDateTo) => Math.abs(dayjs(dueDateFrom).diff(dayjs(dueDateTo)));
+
 export {
   humanizeEventDueDate,
   isEventFuture,
   isEventPresent,
   isEventPast,
+  getEventDuration,
 };
