@@ -31,14 +31,14 @@ function createEventEditButtonsTemplate() {
 }
 
 function createEventDestinationsTemplate(eventDestination) {
-  if (eventDestination.pictures.length || eventDestination.description) {
+  if (eventDestination.pictures.length > 0 || eventDestination.description) {
     return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       ${eventDestination.description ?
     `<p class="event__destination-description">${eventDestination.description}</p>`
     : ''}
 
-      ${eventDestination.pictures.length ?
+      ${eventDestination.pictures.length > 0 ?
     `<div class="event__photos-container">
         <div class="event__photos-tape">
           ${eventDestination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}
@@ -51,7 +51,7 @@ function createEventDestinationsTemplate(eventDestination) {
 }
 
 function createEventOffersTemplate(eventAllOffers, eventOffers) {
-  if (eventAllOffers.length) {
+  if (eventAllOffers.length > 0) {
     return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -186,43 +186,43 @@ function createEventEditTemplate(event, destinations, offers) {
 }
 
 export default class EventEditView extends AbstractView {
-  #event = null;
-  #destinations = null;
-  #offers = null;
+  #event = [];
+  #destinations = [];
+  #offers = [];
 
-  #onEventEditSubmitButton = null;
-  #onEventEditResetButton = null;
-  #onEventEditRollupButton = null;
+  #onEventEditSubmit = () => {};
+  #onEventEditReset = () => {};
+  #onEventEditRollup = () => {};
 
   constructor({
     event = BLANK_EVENT,
     destinations,
     offers,
-    onEventEditSubmitButton,
-    onEventEditResetButton,
-    onEventEditRollupButton,
+    onEventEditSubmit,
+    onEventEditReset,
+    onEventEditRollup,
   }) {
     super();
     this.#event = event;
     this.#destinations = destinations;
     this.#offers = offers;
 
-    this.#onEventEditSubmitButton = onEventEditSubmitButton;
-    this.#onEventEditResetButton = onEventEditResetButton;
-    this.#onEventEditRollupButton = onEventEditRollupButton;
+    this.#onEventEditSubmit = onEventEditSubmit;
+    this.#onEventEditReset = onEventEditReset;
+    this.#onEventEditRollup = onEventEditRollup;
 
     this.element
       .querySelector('form')
-      .addEventListener('submit', this.#clickSubmitButton);
+      .addEventListener('submit', this.#handleSubmitClick);
 
     this.element
       .querySelector('.event__reset-btn')
-      .addEventListener('click', this.#clickResetButton);
+      .addEventListener('click', this.#handleResetClick);
 
     if (!event.add) {
       this.element
         .querySelector('.event__rollup-btn')
-        .addEventListener('click', this.#clickRollupButton);
+        .addEventListener('click', this.#handleRollupClick);
     }
   }
 
@@ -230,18 +230,18 @@ export default class EventEditView extends AbstractView {
     return createEventEditTemplate(this.#event, this.#destinations, this.#offers);
   }
 
-  #clickSubmitButton = (evt) => {
+  #handleSubmitClick = (evt) => {
     evt.preventDefault();
-    this.#onEventEditSubmitButton(evt);
+    this.#onEventEditSubmit(evt);
   };
 
-  #clickResetButton = (evt) => {
+  #handleResetClick = (evt) => {
     evt.preventDefault();
-    this.#onEventEditResetButton(evt);
+    this.#onEventEditReset(evt);
   };
 
-  #clickRollupButton = (evt) => {
+  #handleRollupClick = (evt) => {
     evt.preventDefault();
-    this.#onEventEditRollupButton(evt);
+    this.#onEventEditRollup(evt);
   };
 }

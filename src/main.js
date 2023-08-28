@@ -8,7 +8,7 @@ import EventsModel from './model/event-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 
-import {generateFilter} from './mock/filter.js';
+import {generateFilter} from './utils/filter.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');

@@ -56,6 +56,6 @@ const eventDestinations = [
   }
 ];
 
-const getDestinationsData = () => eventDestinations;
+const getDestinations = () => eventDestinations;
 
-export {getDestinationsData, eventDestinations};
+export {getDestinations, eventDestinations};

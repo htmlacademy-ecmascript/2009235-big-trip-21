@@ -8,4 +8,12 @@ const filter = {
   [FilterType.PAST]: (events) => events.filter((event) => isEventPast(event.dateTo) && !event.isArchive),
 };
 
-export {filter};
+function generateFilter() {
+  return Object.keys(filter).map(
+    (filterType) => ({
+      type: filterType,
+    }),
+  );
+}
+
+export {generateFilter};

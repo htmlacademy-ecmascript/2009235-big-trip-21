@@ -8,14 +8,14 @@ import {isEscapeKey} from '../utils/common.js';
 import {MessageType} from '../const.js';
 
 export default class BoardPresenter {
-  #boardContainer = null;
-  #eventsModel = null;
-  #destinationsModel = null;
-  #offersModel = null;
+  #boardContainer = {};
+  #eventsModel = [];
+  #destinationsModel = [];
+  #offersModel = [];
 
-  #boardEvents = null;
-  #boardDestinations = null;
-  #boardOffers = null;
+  #boardEvents = [];
+  #boardDestinations = [];
+  #boardOffers = [];
 
   #sortComponent = new SortView();
   #eventsListComponent = new EventsListView();
@@ -60,28 +60,31 @@ export default class BoardPresenter {
       }
     };
 
+    //console.log(this.#offersModel.getByType(event.type));
     const eventItemComponent = new EventItemView({
       event: event,
       offers: this.#boardOffers,
-      onEventFavoriteButton: () => {},
-      onEventRollupButton: () => {
+      onEventFavorite: () => {},
+      onEventRollup: () => {
         replaceCardToForm();
         document.addEventListener('keydown', onDocumentKeydownEscape);
       },
     });
 
+    //this.#offersModel.getByType(event.type))
+    //this.#destinationsModel.getByName(event.destination))
     const eventEditComponent = new EventEditView({
       event: event,
       destinations: this.#boardDestinations,
       offers: this.#boardOffers,
-      onEventEditSubmitButton: () => {
+      onEventEditSubmit: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', onDocumentKeydownEscape);
       },
-      onEventEditResetButton: () => {
+      onEventEditReset: () => {
         remove(eventEditComponent);
       },
-      onEventEditRollupButton: () => {
+      onEventEditRollup: () => {
         replaceFormToCard();
         document.removeEventListener('keydown', onDocumentKeydownEscape);
       },
@@ -107,10 +110,10 @@ export default class BoardPresenter {
     const eventAddComponent = new EventEditView({
       destinations: this.#boardDestinations,
       offers: this.#boardOffers,
-      onEventEditSubmitButton: () => {
+      onEventEditSubmit: () => {
         remove(eventAddComponent);
       },
-      onEventEditResetButton: () => {
+      onEventEditReset: () => {
         remove(eventAddComponent);
       },
     });

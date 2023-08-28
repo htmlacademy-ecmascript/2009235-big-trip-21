@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import {DateTimeFormat} from '../const.js';
 
-
 const humanizeEventDueDate = (dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) => dueDate ? dayjs(dueDate).format(format) : '';
 
 const isEventFuture = (dueDateFrom) => dueDateFrom && dayjs(dueDateFrom).isAfter(dayjs(), 'D');

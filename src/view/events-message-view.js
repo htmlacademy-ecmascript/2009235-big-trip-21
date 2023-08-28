@@ -7,7 +7,7 @@ function createEventsMessageTemplate(message) {
 }
 
 export default class EventsMessageView extends AbstractView {
-  #message = null;
+  #message = 'Oops...';
 
   constructor(message) {
     super();

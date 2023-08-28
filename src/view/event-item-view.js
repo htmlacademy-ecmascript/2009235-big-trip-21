@@ -3,11 +3,11 @@ import {humanizeEventDueDate} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
 
 function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
-  if (eventOffers.length) {
+  if (eventOffers.length > 0) {
     return `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
     ${eventOffers.map((eventOffer) => {
-    const foundOffer = eventTypeOffers.offers.find((eventTypeOffer) => eventTypeOffer.id === eventOffer);
+    const foundOffer = eventTypeOffers.find((eventTypeOffer) => eventTypeOffer.id === eventOffer);
     return `<li class="event__offer">
         <span class="event__offer-title">${foundOffer.title}</span>
         +€&nbsp;
@@ -22,7 +22,7 @@ function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
 
 function createEventItemTemplate(event, offers) {
   const {basePrice, dateFrom, dateTo, destination, type, isFavorite} = event;
-  const eventTypeOffers = offers.find((offer) => offer.type === type);
+  const eventTypeOffers = offers.find((offer) => offer.type === type).offers;
 
   const startTimeInContent = humanizeEventDueDate(dateFrom, DateTimeFormat.TIME);
   const startTimeInAtribut = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_ATRIBUT);
@@ -70,39 +70,38 @@ function createEventItemTemplate(event, offers) {
 }
 
 export default class EventItemView extends AbstractView {
-  #event = null;
-  #offers = null;
-  #onEventFavoriteButton = null;
-  #onEventRollupButton = null;
-  #favoriteButton = null;
+  #event = [];
+  #offers = [];
+  #onEventFavorite = () => {};
+  #onEventRollup = () => {};
 
-  constructor({event, offers, onEventFavoriteButton, onEventRollupButton}) {
+  constructor({event, offers, onEventFavorite, onEventRollup}) {
     super();
     this.#event = event;
     this.#offers = offers;
-    this.#onEventFavoriteButton = onEventFavoriteButton;
-    this.#onEventRollupButton = onEventRollupButton;
+    this.#onEventFavorite = onEventFavorite;
+    this.#onEventRollup = onEventRollup;
 
-    this.#favoriteButton = this.element.querySelector('.event__favorite-btn');
-    this.#favoriteButton.addEventListener('click', this.#clickFavoriteButton);
+    this.element
+      .querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#handleFavoriteClick);
 
     this.element
       .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#clickRollupButton);
+      .addEventListener('click', this.#handleRollupClick);
   }
 
   get template() {
     return createEventItemTemplate(this.#event, this.#offers);
   }
 
-  #clickFavoriteButton = (evt) => {
+  #handleFavoriteClick = (evt) => {
     evt.preventDefault();
-    this.#favoriteButton.classList.toggle('event__favorite-btn--active');
-    this.#onEventFavoriteButton(evt);
+    this.#onEventFavorite(evt);
   };
 
-  #clickRollupButton = (evt) => {
+  #handleRollupClick = (evt) => {
     evt.preventDefault();
-    this.#onEventRollupButton(evt);
+    this.#onEventRollup(evt);
   };
 }

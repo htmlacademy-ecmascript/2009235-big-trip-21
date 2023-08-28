@@ -1,13 +1,17 @@
-import {getOffersData} from '../mock/offers.js';
+import {getOffers} from '../mock/offers.js';
 
 export default class OffersModel {
-  #offers = null;
+  #offers = [];
 
   constructor() {
-    this.#offers = getOffersData();
+    this.#offers = getOffers();
   }
 
   get offers() {
     return this.#offers;
+  }
+
+  getByType(eventType) {
+    return this.#offers.find((offer) => offer.type.toLowerCase() === eventType.toLowerCase()).offers;
   }
 }
