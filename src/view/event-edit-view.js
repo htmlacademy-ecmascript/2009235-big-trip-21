@@ -1,5 +1,6 @@
-import {createElement} from '../render.js';
-import {humanizeEventDueDate, DateTimeFormat} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {humanizeEventDueDate} from '../utils/event.js';
+import {DateTimeFormat} from '../const.js';
 
 const BLANK_EVENT = {
   basePrice: 0,
@@ -30,14 +31,14 @@ function createEventEditButtonsTemplate() {
 }
 
 function createEventDestinationsTemplate(eventDestination) {
-  if (eventDestination.pictures.length || eventDestination.description) {
+  if (eventDestination.pictures.length > 0 || eventDestination.description) {
     return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       ${eventDestination.description ?
     `<p class="event__destination-description">${eventDestination.description}</p>`
     : ''}
 
-      ${eventDestination.pictures.length ?
+      ${eventDestination.pictures.length > 0 ?
     `<div class="event__photos-container">
         <div class="event__photos-tape">
           ${eventDestination.pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}
@@ -50,7 +51,7 @@ function createEventDestinationsTemplate(eventDestination) {
 }
 
 function createEventOffersTemplate(eventAllOffers, eventOffers) {
-  if (eventAllOffers.length) {
+  if (eventAllOffers.length > 0) {
     return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -184,26 +185,63 @@ function createEventEditTemplate(event, destinations, offers) {
   );
 }
 
-export default class EventEditView {
-  constructor({event = BLANK_EVENT, destinations, offers}) {
-    this.event = event;
-    this.destinations = destinations;
-    this.offers = offers;
-  }
+export default class EventEditView extends AbstractView {
+  #event = [];
+  #destinations = [];
+  #offers = [];
 
-  getTemplate() {
-    return createEventEditTemplate(this.event, this.destinations, this.offers);
-  }
+  #onEventEditSubmit = () => {};
+  #onEventEditReset = () => {};
+  #onEventEditRollup = () => {};
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  constructor({
+    event = BLANK_EVENT,
+    destinations,
+    offers,
+    onEventEditSubmit,
+    onEventEditReset,
+    onEventEditRollup,
+  }) {
+    super();
+    this.#event = event;
+    this.#destinations = destinations;
+    this.#offers = offers;
+
+    this.#onEventEditSubmit = onEventEditSubmit;
+    this.#onEventEditReset = onEventEditReset;
+    this.#onEventEditRollup = onEventEditRollup;
+
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.#handleSubmitClick);
+
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#handleResetClick);
+
+    if (!event.add) {
+      this.element
+        .querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#handleRollupClick);
     }
-
-    return this.element;
   }
 
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createEventEditTemplate(this.#event, this.#destinations, this.#offers);
   }
+
+  #handleSubmitClick = (evt) => {
+    evt.preventDefault();
+    this.#onEventEditSubmit(evt);
+  };
+
+  #handleResetClick = (evt) => {
+    evt.preventDefault();
+    this.#onEventEditReset(evt);
+  };
+
+  #handleRollupClick = (evt) => {
+    evt.preventDefault();
+    this.#onEventEditRollup(evt);
+  };
 }

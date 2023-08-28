@@ -1,7 +1,7 @@
 import {
   getRandomInteger,
   createRandomIntegerFromRangeGenerator,
-} from '../utils.js';
+} from '../utils/common.js';
 
 const eventTypes = [
   'taxi',
@@ -50,6 +50,6 @@ const createOffer = (index) => ({
 
 const createOffers = () => Array.from({length: eventTypes.length}, (_, typeIndex) => createOffer(typeIndex));
 const offersData = createOffers();
-const getOffersData = () => offersData;
+const getOffers = () => offersData;
 
-export {getOffersData, offersData};
+export {getOffers, offersData};

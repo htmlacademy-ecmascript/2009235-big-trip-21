@@ -4,22 +4,22 @@ import {
   getRandomBoolean,
   createRandomIntegerFromRangeGenerator,
   createdIdGenerator
-} from '../utils.js';
+} from '../utils/common.js';
 import {eventDestinations} from './destinations.js';
 import {offersData} from './offers.js';
 
 const eventDatesFrom = [
   '2023-07-10T20:55:56.845Z',
   '2023-07-10T21:55:56.845Z',
-  '2023-07-10T22:55:56.845Z',
-  '2023-07-10T23:55:56.845Z',
+  '2024-07-10T22:55:56.845Z',
+  '2024-07-10T23:55:56.845Z',
 ];
 
 const eventDatesTo = [
   '2023-08-10T20:55:56.845Z',
   '2023-08-10T21:55:56.845Z',
-  '2023-08-10T22:55:56.845Z',
-  '2023-08-10T23:55:56.845Z',
+  '2024-08-10T22:55:56.845Z',
+  '2024-08-10T23:55:56.845Z',
 ];
 
 const generateEventID = createdIdGenerator();
