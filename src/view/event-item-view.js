@@ -20,9 +20,8 @@ function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
   return '';
 }
 
-function createEventItemTemplate(event, offers) {
-  const {basePrice, dateFrom, dateTo, destination, type, isFavorite} = event;
-  const eventTypeOffers = offers.find((offer) => offer.type === type).offers;
+function createEventItemTemplate(event, eventTypeOffers) {
+  const {basePrice, dateFrom, dateTo, destination, type, isFavorite, offers} = event;
 
   const startTimeInContent = humanizeEventDueDate(dateFrom, DateTimeFormat.TIME);
   const startTimeInAtribut = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_ATRIBUT);
@@ -54,7 +53,7 @@ function createEventItemTemplate(event, offers) {
       <p class="event__price">
         €&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
-      ${createEventItemOffersTemplate(event.offers, eventTypeOffers)}
+      ${createEventItemOffersTemplate(offers, eventTypeOffers)}
       <button class="event__favorite-btn ${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28" focusable="false" >
@@ -71,14 +70,14 @@ function createEventItemTemplate(event, offers) {
 
 export default class EventItemView extends AbstractView {
   #event = [];
-  #offers = [];
+  #eventTypeOffers = [];
   #onEventFavorite = () => {};
   #onEventRollup = () => {};
 
-  constructor({event, offers, onEventFavorite, onEventRollup}) {
+  constructor({event, eventTypeOffers, onEventFavorite, onEventRollup}) {
     super();
     this.#event = event;
-    this.#offers = offers;
+    this.#eventTypeOffers = eventTypeOffers;
     this.#onEventFavorite = onEventFavorite;
     this.#onEventRollup = onEventRollup;
 
@@ -92,7 +91,7 @@ export default class EventItemView extends AbstractView {
   }
 
   get template() {
-    return createEventItemTemplate(this.#event, this.#offers);
+    return createEventItemTemplate(this.#event, this.#eventTypeOffers);
   }
 
   #handleFavoriteClick = (evt) => {
