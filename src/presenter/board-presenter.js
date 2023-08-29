@@ -60,10 +60,10 @@ export default class BoardPresenter {
       }
     };
 
-    //console.log(this.#offersModel.getByType(event.type));
+    //console.log(this.#offersModel.getByType(event.type)); <= this.#boardOffers
     const eventItemComponent = new EventItemView({
       event: event,
-      offers: this.#boardOffers,
+      eventTypeOffers: this.#offersModel.getByType(event.type),
       onEventFavorite: () => {},
       onEventRollup: () => {
         replaceCardToForm();
