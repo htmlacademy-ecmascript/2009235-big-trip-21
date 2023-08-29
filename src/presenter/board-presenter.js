@@ -39,13 +39,28 @@ export default class BoardPresenter {
 
   #renderBoard() {
     if (this.#boardEvents.every((event) => event.isArchive)) {
-      render(new EventsMessageView(MessageType.NO_EVENTS), this.#boardContainer);
+      this.#renderNoEvents();
       return;
     }
 
-    render(this.#sortComponent, this.#boardContainer);
-    render(this.#eventsListComponent, this.#boardContainer);
+    this.#renderSort();
+    this.#renderList();
+    this.#renderEvents();
+  }
 
+  #renderNoEvents() {
+    render(new EventsMessageView(MessageType.NO_EVENTS), this.#boardContainer);
+  }
+
+  #renderSort() {
+    render(this.#sortComponent, this.#boardContainer);
+  }
+
+  #renderList() {
+    render(this.#eventsListComponent, this.#boardContainer);
+  }
+
+  #renderEvents() {
     this.#boardEvents.forEach((event) => {
       this.#renderEventItem(event);
     });
