@@ -28,6 +28,9 @@ export default class EventPresenter {
     this.#boardDestinations = [...this.#destinationsModel.destinations];
     this.#boardOffers = [...this.#offersModel.offers];
 
+    const prevEventItemComponent = this.#eventItemComponent;
+    const prevEventEditComponent = this.#eventEditComponent;
+
     //console.log(this.#offersModel.getByType(event.type)); <= this.#boardOffers
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
@@ -47,7 +50,28 @@ export default class EventPresenter {
       onEventEditRollup: this.#handleEventEditRollup,
     });
 
-    render(this.#eventItemComponent, this.#eventsListContainer);
+    if (!prevEventItemComponent.element || !prevEventEditComponent.element) {
+      render(this.#eventItemComponent, this.#eventsListContainer);
+      return;
+    }
+
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#eventsListContainer.contains(prevEventItemComponent.element)) {
+      replace(this.#eventItemComponent, prevEventItemComponent);
+    }
+
+    if (this.#eventsListContainer.contains(prevEventEditComponent.element)) {
+      replace(this.#eventEditComponent, prevEventEditComponent);
+    }
+
+    remove(prevEventItemComponent);
+    remove(prevEventEditComponent);
+  }
+
+  destroy() {
+    remove(this.#eventItemComponent);
+    remove(this.#eventEditComponent);
   }
 
   #onDocumentKeydownEscape = (evt) => {
