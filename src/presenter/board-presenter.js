@@ -1,11 +1,9 @@
-import {render, replace, remove} from '../framework/render.js';
+import {render} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
-import EventItemView from '../view/event-item-view.js';
-import EventEditView from '../view/event-edit-view.js';
 import EventsMessageView from '../view/events-message-view.js';
-import {isEscapeKey} from '../utils/common.js';
 import {MessageType} from '../const.js';
+import EventPresenter from './event-presenter.js';
 
 export default class BoardPresenter {
   #boardContainer = {};
@@ -14,8 +12,7 @@ export default class BoardPresenter {
   #offersModel = [];
 
   #boardEvents = [];
-  #boardDestinations = [];
-  #boardOffers = [];
+
 
   #sortComponent = new SortView();
   #eventsListComponent = new EventsListView();
@@ -29,8 +26,6 @@ export default class BoardPresenter {
 
   init() {
     this.#boardEvents = [...this.#eventsModel.events];
-    this.#boardDestinations = [...this.#destinationsModel.destinations];
-    this.#boardOffers = [...this.#offersModel.offers];
 
     this.#renderBoard();
 
@@ -67,53 +62,12 @@ export default class BoardPresenter {
   }
 
   #renderEventItem(event) {
-    const onDocumentKeydownEscape = (evt) => {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', onDocumentKeydownEscape);
-      }
-    };
-
-    //console.log(this.#offersModel.getByType(event.type)); <= this.#boardOffers
-    const eventItemComponent = new EventItemView({
-      event: event,
-      eventTypeOffers: this.#offersModel.getByType(event.type),
-      onEventFavorite: () => {},
-      onEventRollup: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', onDocumentKeydownEscape);
-      },
+    const eventPresenter = new EventPresenter ({
+      eventsListContainer: this.#eventsListComponent.element,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
     });
-
-    //this.#offersModel.getByType(event.type))
-    //this.#destinationsModel.getByName(event.destination))
-    const eventEditComponent = new EventEditView({
-      event: event,
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
-      onEventEditSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', onDocumentKeydownEscape);
-      },
-      onEventEditReset: () => {
-        remove(eventEditComponent);
-      },
-      onEventEditRollup: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', onDocumentKeydownEscape);
-      },
-    });
-
-    function replaceCardToForm() {
-      replace(eventEditComponent, eventItemComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(eventItemComponent, eventEditComponent);
-    }
-
-    render(eventItemComponent, this.#eventsListComponent.element);
+    eventPresenter.init(event);
   }
 
   /*#addEventButtonClick() {
