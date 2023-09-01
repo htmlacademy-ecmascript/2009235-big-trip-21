@@ -26,15 +26,6 @@ const createRandomIntegerFromRangeGenerator = (min, max) => {
   };
 };
 
-const createdIdGenerator = () => {
-  let i = 0;
-
-  return () => {
-    i += 1;
-    return i;
-  };
-};
-
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
 export {
@@ -42,6 +33,5 @@ export {
   getRandomInteger,
   getRandomBoolean,
   createRandomIntegerFromRangeGenerator,
-  createdIdGenerator,
   isEscapeKey,
 };

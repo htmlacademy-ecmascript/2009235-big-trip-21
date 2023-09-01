@@ -4,6 +4,7 @@ import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType} from '../const.js';
 import EventPresenter from './event-presenter.js';
+import {updateEventItem} from '../utils/event.js';
 
 export default class BoardPresenter {
   #boardContainer = {};
@@ -12,7 +13,7 @@ export default class BoardPresenter {
   #offersModel = [];
 
   #boardEvents = [];
-
+  #eventPresenters = new Map();
 
   #sortComponent = new SortView();
   #eventsListComponent = new EventsListView();
@@ -66,9 +67,26 @@ export default class BoardPresenter {
       eventsListContainer: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange,
     });
     eventPresenter.init(event);
+    this.#eventPresenters.set(event.id, eventPresenter);
   }
+
+  #clearEventsList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+  }
+
+  #handleEventChange = (updatedEvent) => {
+    this.#boardEvents = updateEventItem(this.#boardEvents, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #handleModeChange = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
 
   /*#addEventButtonClick() {
     const addEventButton = document.querySelector('.trip-main__event-add-btn');

@@ -9,10 +9,13 @@ const isEventPast = (dueDateTo) => dueDateTo && dayjs(dueDateTo).isBefore(dayjs(
 
 const getEventDuration = (dueDateFrom, dueDateTo) => Math.abs(dayjs(dueDateFrom).diff(dayjs(dueDateTo)));
 
+const updateEventItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+
 export {
   humanizeEventDueDate,
   isEventFuture,
   isEventPresent,
   isEventPast,
   getEventDuration,
+  updateEventItem,
 };

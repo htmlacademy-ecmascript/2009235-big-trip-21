@@ -232,7 +232,9 @@ export default class EventEditView extends AbstractView {
 
   #handleSubmitClick = (evt) => {
     evt.preventDefault();
-    this.#onEventEditSubmit(evt);
+    if (!event.add) {
+      this.#onEventEditSubmit(this.#event);
+    }
   };
 
   #handleResetClick = (evt) => {
