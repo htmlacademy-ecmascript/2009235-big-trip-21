@@ -77,6 +77,8 @@ export default class BoardPresenter {
       offersModel: this.#offersModel,
       onDataChange: this.#handleEventDataChange,
       onModeChange: this.#handleModeChange,
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange,
     });
     eventPresenter.init(event);
     this.#eventPresenters.set(event.id, eventPresenter);
