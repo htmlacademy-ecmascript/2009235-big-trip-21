@@ -21,5 +21,6 @@ export {
   isEventFuture,
   isEventPresent,
   isEventPast,
-  getEventDuration,
+  updateEventItem,
+  getDateDifference,
 };

@@ -7,16 +7,10 @@ const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
 export default class EventPresenter {
   #eventsListContainer = {};
   #destinationsModel = [];
   #offersModel = [];
-  #handleDataChange = () => {};
-  #handleModeChange = () => {};
   #handleDataChange = () => {};
   #handleModeChange = () => {};
 
@@ -30,14 +24,9 @@ export default class EventPresenter {
   #mode = Mode.DEFAULT;
 
   constructor({eventsListContainer, destinationsModel, offersModel, onDataChange, onModeChange}) {
-  #mode = Mode.DEFAULT;
-
-  constructor({eventsListContainer, destinationsModel, offersModel, onDataChange, onModeChange}) {
     this.#eventsListContainer = eventsListContainer;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
-    this.#handleDataChange = onDataChange;
-    this.#handleModeChange = onModeChange;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
@@ -55,7 +44,6 @@ export default class EventPresenter {
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
-      onEventFavorite: this.#handleEventFavorite,
       onEventFavorite: this.#handleEventFavorite,
       onEventRollup: this.#handleEventRollup,
     });
@@ -79,11 +67,9 @@ export default class EventPresenter {
     // Проверка на наличие в DOM необходима,
     // чтобы не пытаться заменить то, что не было отрисовано
     if (this.#mode === Mode.DEFAUL) {
-    if (this.#mode === Mode.DEFAUL) {
       replace(this.#eventItemComponent, prevEventItemComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
     if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
@@ -95,12 +81,6 @@ export default class EventPresenter {
   destroy() {
     remove(this.#eventItemComponent);
     remove(this.#eventEditComponent);
-  }
-
-  resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#replaceFormToCard();
-    }
   }
 
   resetView() {
@@ -121,14 +101,11 @@ export default class EventPresenter {
     document.addEventListener('keydown', this.#onDocumentKeydownEscape);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
-    this.#handleModeChange();
-    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToCard() {
     replace(this.#eventItemComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#onDocumentKeydownEscape);
-    this.#mode = Mode.DEFAULT;
     this.#mode = Mode.DEFAULT;
   }
 
@@ -148,10 +125,6 @@ export default class EventPresenter {
 
   #handleEventEditRollup = () => {
     this.#replaceFormToCard();
-  };
-
-  #handleEventFavorite = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
   };
 
   #handleEventEditSubmit = (event) => {

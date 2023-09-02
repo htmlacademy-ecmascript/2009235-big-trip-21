@@ -44,7 +44,7 @@ export default class BoardPresenter {
 
     this.#renderSort();
     this.#renderList();
-    //this.#sortEvents(this.#currentSortType);
+    this.#sortEvents(this.#currentSortType);
     this.#renderEvents();
   }
 
@@ -76,8 +76,6 @@ export default class BoardPresenter {
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
       onDataChange: this.#handleEventDataChange,
-      onModeChange: this.#handleModeChange,
-      onDataChange: this.#handleEventChange,
       onModeChange: this.#handleModeChange,
     });
     eventPresenter.init(event);
