@@ -31,7 +31,8 @@
     "style-loader": "3.3.2"
   },
   "dependencies": {
-    "dayjs": "1.11.7"
+    "dayjs": "1.11.7",
+    "nanoid": "4.0.2"
   },
   "engines": {
     "node": "18"

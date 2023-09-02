@@ -3,11 +3,16 @@ import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import {isEscapeKey} from '../utils/common.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
 export default class EventPresenter {
   #eventsListContainer = {};
-
   #destinationsModel = [];
   #offersModel = [];
+  #handleDataChange = () => {};
+  #handleModeChange = () => {};
 
   #boardDestinations = [];
   #boardOffers = [];
@@ -16,10 +21,14 @@ export default class EventPresenter {
   #eventItemComponent = {};
   #eventEditComponent = {};
 
-  constructor({eventsListContainer, destinationsModel, offersModel}) {
+  #mode = Mode.DEFAULT;
+
+  constructor({eventsListContainer, destinationsModel, offersModel, onDataChange, onModeChange}) {
     this.#eventsListContainer = eventsListContainer;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+    this.#handleDataChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   init(event) {
@@ -35,7 +44,7 @@ export default class EventPresenter {
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
-      onEventFavorite: () => {},
+      onEventFavorite: this.#handleEventFavorite,
       onEventRollup: this.#handleEventRollup,
     });
 
@@ -57,11 +66,11 @@ export default class EventPresenter {
 
     // Проверка на наличие в DOM необходима,
     // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#eventsListContainer.contains(prevEventItemComponent.element)) {
+    if (this.#mode === Mode.DEFAUL) {
       replace(this.#eventItemComponent, prevEventItemComponent);
     }
 
-    if (this.#eventsListContainer.contains(prevEventEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
 
@@ -74,6 +83,12 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   }
 
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
+  }
+
   #onDocumentKeydownEscape = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
@@ -84,11 +99,14 @@ export default class EventPresenter {
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventItemComponent);
     document.addEventListener('keydown', this.#onDocumentKeydownEscape);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToCard() {
     replace(this.#eventItemComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#onDocumentKeydownEscape);
+    this.#mode = Mode.DEFAULT;
   }
 
   #removeCard() {
@@ -99,11 +117,18 @@ export default class EventPresenter {
     this.#replaceCardToForm();
   };
 
+  #handleEventFavorite = () => {
+    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+  };
+
+  /*--------*/
+
   #handleEventEditRollup = () => {
     this.#replaceFormToCard();
   };
 
-  #handleEventEditSubmit = () => {
+  #handleEventEditSubmit = (event) => {
+    this.#handleDataChange(event);
     this.#replaceFormToCard();
   };
 

@@ -7,12 +7,20 @@ const isEventFuture = (dueDateFrom) => dueDateFrom && dayjs(dueDateFrom).isAfter
 const isEventPresent = (dueDateFrom, dueDateTo) => dueDateFrom && dueDateTo && dayjs(dueDateFrom).isSame(dayjs(), 'D') && dayjs(dueDateTo).isAfter(dayjs(), 'D');
 const isEventPast = (dueDateTo) => dueDateTo && dayjs(dueDateTo).isBefore(dayjs(), 'D');
 
-const getEventDuration = (dueDateFrom, dueDateTo) => Math.abs(dayjs(dueDateFrom).diff(dayjs(dueDateTo)));
+const getDateDifference = (dateA, dateB) => dayjs(dateA).diff(dayjs(dateB));
+
+/**
+* @param items Набор событий
+* @param update Обновленное событие
+* @returns Обновленный набор событий
+*/
+const updateEventItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 export {
   humanizeEventDueDate,
   isEventFuture,
   isEventPresent,
   isEventPast,
-  getEventDuration,
+  getDateDifference,
+  updateEventItem,
 };

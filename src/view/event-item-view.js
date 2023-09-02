@@ -96,11 +96,11 @@ export default class EventItemView extends AbstractView {
 
   #handleFavoriteClick = (evt) => {
     evt.preventDefault();
-    this.#onEventFavorite(evt);
+    this.#onEventFavorite();
   };
 
   #handleRollupClick = (evt) => {
     evt.preventDefault();
-    this.#onEventRollup(evt);
+    this.#onEventRollup();
   };
 }

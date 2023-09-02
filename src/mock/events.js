@@ -3,10 +3,10 @@ import {
   getRandomInteger,
   getRandomBoolean,
   createRandomIntegerFromRangeGenerator,
-  createdIdGenerator
 } from '../utils/common.js';
 import {eventDestinations} from './destinations.js';
 import {offersData} from './offers.js';
+import {nanoid} from 'nanoid';
 
 const eventDatesFrom = [
   '2023-07-10T20:55:56.845Z',
@@ -21,8 +21,6 @@ const eventDatesTo = [
   '2024-08-10T22:55:56.845Z',
   '2024-08-10T23:55:56.845Z',
 ];
-
-const generateEventID = createdIdGenerator();
 
 let offerType;
 
@@ -43,7 +41,7 @@ const generateOffersID = (type) => {
 };
 
 const createEvent = () => ({
-  id: generateEventID(),
+  id: nanoid(),
   basePrice: getRandomInteger(1000, 10000),
   dateFrom: new Date(getRandomArrayElement(eventDatesFrom)),
   dateTo: new Date(getRandomArrayElement(eventDatesTo)),

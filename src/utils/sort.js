@@ -1,8 +1,8 @@
 import {SortType} from '../const';
-import {getEventDuration} from './event.js';
+import {getDateDifference} from './event.js';
 
-const compareMoreEarlyDay = (eventA, eventB) => new Date(eventA.dateFrom).setHours(0, 0, 0, 0) - new Date(eventB.dateFrom).setHours(0, 0, 0, 0);
-const compareMoreDuration = (eventA, eventB) => getEventDuration(eventB.dateFrom, eventB.dateTo) - getEventDuration(eventA.dateFrom, eventA.dateTo);
+const compareMoreEarlyDay = (eventA, eventB) => getDateDifference(eventA.dateFrom, eventB.dateFrom);
+const compareMoreDuration = (eventA, eventB) => Math.abs(getDateDifference(eventB.dateFrom, eventB.dateTo)) - Math.abs(getDateDifference(eventA.dateFrom, eventA.dateTo));
 const compareMoreExpensive = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const sort = {
@@ -11,4 +11,6 @@ const sort = {
   [SortType.PRICE]: (events) => events.slice().sort(compareMoreExpensive),
 };
 
-export {sort};
+const startSort = (events, sortType) => sort[sortType](events);
+
+export {sort, startSort};
