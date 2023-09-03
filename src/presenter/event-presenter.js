@@ -9,10 +9,9 @@ const Mode = {
 };
 export default class EventPresenter {
   #eventsListContainer = {};
+
   #destinationsModel = [];
   #offersModel = [];
-  #handleDataChange = () => {};
-  #handleModeChange = () => {};
 
   #boardDestinations = [];
   #boardOffers = [];
@@ -22,6 +21,9 @@ export default class EventPresenter {
   #eventEditComponent = {};
 
   #mode = Mode.DEFAULT;
+
+  #handleDataChange = () => {};
+  #handleModeChange = () => {};
 
   constructor({eventsListContainer, destinationsModel, offersModel, onDataChange, onModeChange}) {
     this.#eventsListContainer = eventsListContainer;
@@ -66,7 +68,7 @@ export default class EventPresenter {
 
     // Проверка на наличие в DOM необходима,
     // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#mode === Mode.DEFAUL) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventItemComponent, prevEventItemComponent);
     }
 
@@ -83,18 +85,18 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   }
 
-  resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#replaceFormToCard();
-    }
-  }
-
   #onDocumentKeydownEscape = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.#replaceFormToCard();
     }
   };
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
+  }
 
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventItemComponent);
@@ -133,7 +135,6 @@ export default class EventPresenter {
   };
 
   #handleEventEditReset = () => {
-    //this.#handleDataChange({...this.#event, isArchive: !this.#event.isArchive});
     this.#removeCard();
   };
 }

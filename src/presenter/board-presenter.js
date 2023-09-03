@@ -89,7 +89,6 @@ export default class BoardPresenter {
 
   #handleEventDataChange = (updatedEvent) => {
     this.#boardEvents = updateEventItem(this.#boardEvents, updatedEvent);
-
     //Находим презентер для обновленного события и отрисовываем
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
