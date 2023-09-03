@@ -23,8 +23,11 @@ const offersModel = new OffersModel();
 
 const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, eventsModel, destinationsModel, offersModel});
 
-const filters = generateFilter();
-render(new FiltersView({filters}), tripFiltersElement);
+render(new FiltersView({
+  filters: generateFilter(),
+  onFilterTypeChange: () => {},
+}), tripFiltersElement);
+
 render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 
 boardPresenter.init();

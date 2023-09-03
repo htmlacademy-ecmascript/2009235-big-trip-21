@@ -71,36 +71,36 @@ function createEventItemTemplate(event, eventTypeOffers) {
 export default class EventItemView extends AbstractView {
   #event = [];
   #eventTypeOffers = [];
-  #onEventFavorite = () => {};
-  #onEventRollup = () => {};
+  #handleEventFavorite = () => {};
+  #handleEventRollup = () => {};
 
   constructor({event, eventTypeOffers, onEventFavorite, onEventRollup}) {
     super();
     this.#event = event;
     this.#eventTypeOffers = eventTypeOffers;
-    this.#onEventFavorite = onEventFavorite;
-    this.#onEventRollup = onEventRollup;
+    this.#handleEventFavorite = onEventFavorite;
+    this.#handleEventRollup = onEventRollup;
 
     this.element
       .querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#handleFavoriteClick);
+      .addEventListener('click', this.#eventFavoriteHandler);
 
     this.element
       .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#handleRollupClick);
+      .addEventListener('click', this.#eventRollupHandler);
   }
 
   get template() {
     return createEventItemTemplate(this.#event, this.#eventTypeOffers);
   }
 
-  #handleFavoriteClick = (evt) => {
+  #eventFavoriteHandler = (evt) => {
     evt.preventDefault();
-    this.#onEventFavorite();
+    this.#handleEventFavorite();
   };
 
-  #handleRollupClick = (evt) => {
+  #eventRollupHandler = (evt) => {
     evt.preventDefault();
-    this.#onEventRollup();
+    this.#handleEventRollup();
   };
 }

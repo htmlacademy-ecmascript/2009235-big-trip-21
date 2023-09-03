@@ -42,7 +42,7 @@ export default class EventPresenter {
     const prevEventItemComponent = this.#eventItemComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
-    //console.log(this.#offersModel.getByType(event.type)); <= this.#boardOffers
+    //this.#offersModel.getByType(event.type) <= this.#boardOffers
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
@@ -120,7 +120,10 @@ export default class EventPresenter {
   };
 
   #handleEventFavorite = () => {
-    this.#handleDataChange({...this.#event, isFavorite: !this.#event.isFavorite});
+    this.#handleDataChange({
+      ...this.#event,
+      isFavorite: !this.#event.isFavorite
+    });
   };
 
   /*--------*/

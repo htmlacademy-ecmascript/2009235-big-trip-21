@@ -6,9 +6,9 @@ const compareMoreDuration = (eventA, eventB) => Math.abs(getDateDifference(event
 const compareMoreExpensive = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const sort = {
-  [SortType.DAY]: (events) => events.slice().sort(compareMoreEarlyDay),
-  [SortType.TIME]: (events) => events.slice().sort(compareMoreDuration),
-  [SortType.PRICE]: (events) => events.slice().sort(compareMoreExpensive),
+  [SortType.DAY]: (events) => events.toSorted(compareMoreEarlyDay),
+  [SortType.TIME]: (events) => events.toSorted(compareMoreDuration),
+  [SortType.PRICE]: (events) => events.toSorted(compareMoreExpensive),
 };
 
 const startSort = (events, sortType) => sort[sortType](events);

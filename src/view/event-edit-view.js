@@ -190,9 +190,9 @@ export default class EventEditView extends AbstractView {
   #destinations = [];
   #offers = [];
 
-  #onEventEditSubmit = () => {};
-  #onEventEditReset = () => {};
-  #onEventEditRollup = () => {};
+  #handleEventEditSubmit = () => {};
+  #handleEventEditReset = () => {};
+  #handleEventEditRollup = () => {};
 
   constructor({
     event = BLANK_EVENT,
@@ -207,22 +207,22 @@ export default class EventEditView extends AbstractView {
     this.#destinations = destinations;
     this.#offers = offers;
 
-    this.#onEventEditSubmit = onEventEditSubmit;
-    this.#onEventEditReset = onEventEditReset;
-    this.#onEventEditRollup = onEventEditRollup;
+    this.#handleEventEditSubmit = onEventEditSubmit;
+    this.#handleEventEditReset = onEventEditReset;
+    this.#handleEventEditRollup = onEventEditRollup;
 
     this.element
       .querySelector('form')
-      .addEventListener('submit', this.#handleSubmitClick);
+      .addEventListener('submit', this.#eventEditSubmitHandler);
 
     this.element
       .querySelector('.event__reset-btn')
-      .addEventListener('click', this.#handleResetClick);
+      .addEventListener('click', this.#eventEditResetHandler);
 
     if (!event.add) {
       this.element
         .querySelector('.event__rollup-btn')
-        .addEventListener('click', this.#handleRollupClick);
+        .addEventListener('click', this.#eventEditRollupHandler);
     }
   }
 
@@ -230,18 +230,18 @@ export default class EventEditView extends AbstractView {
     return createEventEditTemplate(this.#event, this.#destinations, this.#offers);
   }
 
-  #handleSubmitClick = (evt) => {
+  #eventEditSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#onEventEditSubmit(this.#event);
+    this.#handleEventEditSubmit(this.#event);
   };
 
-  #handleResetClick = (evt) => {
+  #eventEditResetHandler = (evt) => {
     evt.preventDefault();
-    this.#onEventEditReset();
+    this.#handleEventEditReset();
   };
 
-  #handleRollupClick = (evt) => {
+  #eventEditRollupHandler = (evt) => {
     evt.preventDefault();
-    this.#onEventEditRollup();
+    this.#handleEventEditRollup();
   };
 }
