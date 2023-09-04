@@ -15,8 +15,18 @@ const FilterType = {
 
 const SortType = {
   DAY: 'sort-day',
+  EVENT: 'sort-event',
   TIME: 'sort-time',
   PRICE: 'sort-price',
+  OFFERS: 'sort-offer',
+};
+
+const enabledSortType = {
+  [SortType.DAY]: false,
+  [SortType.EVENT]: true,
+  [SortType.TIME]: false,
+  [SortType.PRICE]: false,
+  [SortType.OFFERS]: true,
 };
 
 const MessageType = {
@@ -29,5 +39,6 @@ export {
   DateTimeFormat,
   FilterType,
   SortType,
+  enabledSortType,
   MessageType,
 };

@@ -8,17 +8,17 @@ const Mode = {
   EDITING: 'EDITING',
 };
 export default class EventPresenter {
-  #eventsListContainer = {};
+  #eventsListContainer = null;
 
-  #destinationsModel = [];
-  #offersModel = [];
+  #destinationsModel = null;
+  #offersModel = null;
 
   #boardDestinations = [];
   #boardOffers = [];
 
-  #event = {};
-  #eventItemComponent = {};
-  #eventEditComponent = {};
+  #event = null;
+  #eventItemComponent = null;
+  #eventEditComponent = null;
 
   #mode = Mode.DEFAULT;
 
@@ -61,7 +61,7 @@ export default class EventPresenter {
       onEventEditRollup: this.#handleEventEditRollup,
     });
 
-    if (!prevEventItemComponent.element || !prevEventEditComponent.element) {
+    if (prevEventItemComponent === null || prevEventEditComponent === null) {
       render(this.#eventItemComponent, this.#eventsListContainer);
       return;
     }

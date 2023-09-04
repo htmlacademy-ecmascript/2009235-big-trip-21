@@ -1,4 +1,4 @@
-import {SortType} from '../const';
+import {SortType, enabledSortType} from '../const';
 import {getDateDifference} from './event.js';
 
 const compareMoreEarlyDay = (eventA, eventB) => getDateDifference(eventA.dateFrom, eventB.dateFrom);
@@ -7,10 +7,28 @@ const compareMoreExpensive = (eventA, eventB) => eventB.basePrice - eventA.baseP
 
 const sort = {
   [SortType.DAY]: (events) => events.toSorted(compareMoreEarlyDay),
+  [SortType.EVENT]: () => {
+    throw new Error(`Sort by ${SortType.EVENT} is not implemented`);
+  },
   [SortType.TIME]: (events) => events.toSorted(compareMoreDuration),
   [SortType.PRICE]: (events) => events.toSorted(compareMoreExpensive),
+  [SortType.OFFERS]: () =>{
+    throw new Error(`Sort by ${SortType.OFFERS} is not implemented`);
+  },
 };
+
+function generateSort() {
+  return Object.values(SortType)
+    .map((sortType, index) => ({
+      type: sortType,
+      isChecked: index === 0,
+      isDisabled: !enabledSortType[sortType],
+    }));
+}
 
 const startSort = (events, sortType) => sort[sortType](events);
 
-export {sort, startSort};
+export {
+  generateSort,
+  startSort,
+};

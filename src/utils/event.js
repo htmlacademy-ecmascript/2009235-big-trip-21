@@ -14,7 +14,7 @@ const getDateDifference = (dateA, dateB) => dayjs(dateA).diff(dayjs(dateB));
 * @param update Обновленное событие
 * @returns Обновленный набор событий
 */
-const updateEventItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+const updateEventItem = (events, updatedEvent) => events.map((event) => event.id === updatedEvent.id ? updatedEvent : event);
 
 export {
   humanizeEventDueDate,

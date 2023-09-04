@@ -8,7 +8,7 @@ import {updateEventItem} from '../utils/event.js';
 import {startSort} from '../utils/sort.js';
 
 export default class BoardPresenter {
-  #boardContainer = {};
+  #boardContainer = null;
   #eventsModel = [];
   #destinationsModel = [];
   #offersModel = [];
@@ -17,7 +17,7 @@ export default class BoardPresenter {
   #eventPresenters = new Map();
   #currentSortType = SortType.DAY;
 
-  #sortComponent = {};
+  #sortComponent = null;
   #eventsListComponent = new EventsListView();
 
   constructor({boardContainer, eventsModel, destinationsModel, offersModel}) {
