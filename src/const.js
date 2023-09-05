@@ -21,7 +21,7 @@ const SortType = {
   OFFERS: 'sort-offer',
 };
 
-const enabledSortType = {
+const disabledSortType = {
   [SortType.DAY]: false,
   [SortType.EVENT]: true,
   [SortType.TIME]: false,
@@ -39,6 +39,6 @@ export {
   DateTimeFormat,
   FilterType,
   SortType,
-  enabledSortType,
+  disabledSortType,
   MessageType,
 };

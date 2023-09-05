@@ -10,8 +10,9 @@ const filter = {
 
 function generateFilter() {
   return Object.keys(filter).map(
-    (filterType) => ({
+    (filterType, index) => ({
       type: filterType,
+      isChecked: index === 0,
     }),
   );
 }

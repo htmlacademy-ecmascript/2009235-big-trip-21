@@ -5,7 +5,7 @@ import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType} from '../const.js';
 import EventPresenter from './event-presenter.js';
 import {updateEventItem} from '../utils/event.js';
-import {startSort} from '../utils/sort.js';
+import {startSort, generateSort} from '../utils/sort.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -54,6 +54,7 @@ export default class BoardPresenter {
 
   #renderSort() {
     this.#sortComponent = new SortView({
+      sorting: generateSort(),
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
