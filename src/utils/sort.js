@@ -1,14 +1,34 @@
-import {SortType} from '../const';
-import {getEventDuration} from './event.js';
+import {SortType, disabledSortType} from '../const';
+import {getDateDifference} from './event.js';
 
-const compareMoreEarlyDay = (eventA, eventB) => new Date(eventA.dateFrom).setHours(0, 0, 0, 0) - new Date(eventB.dateFrom).setHours(0, 0, 0, 0);
-const compareMoreDuration = (eventA, eventB) => getEventDuration(eventB.dateFrom, eventB.dateTo) - getEventDuration(eventA.dateFrom, eventA.dateTo);
+const compareMoreEarlyDay = (eventA, eventB) => getDateDifference(eventA.dateFrom, eventB.dateFrom);
+const compareMoreDuration = (eventA, eventB) => Math.abs(getDateDifference(eventB.dateFrom, eventB.dateTo)) - Math.abs(getDateDifference(eventA.dateFrom, eventA.dateTo));
 const compareMoreExpensive = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const sort = {
-  [SortType.DAY]: (events) => events.slice().sort(compareMoreEarlyDay),
-  [SortType.TIME]: (events) => events.slice().sort(compareMoreDuration),
-  [SortType.PRICE]: (events) => events.slice().sort(compareMoreExpensive),
+  [SortType.DAY]: (events) => events.toSorted(compareMoreEarlyDay),
+  [SortType.EVENT]: () => {
+    throw new Error(`Sort by ${SortType.EVENT} is not implemented`);
+  },
+  [SortType.TIME]: (events) => events.toSorted(compareMoreDuration),
+  [SortType.PRICE]: (events) => events.toSorted(compareMoreExpensive),
+  [SortType.OFFERS]: () => {
+    throw new Error(`Sort by ${SortType.OFFERS} is not implemented`);
+  },
 };
 
-export {sort};
+function generateSort() {
+  return Object.values(SortType)
+    .map((sortType, index) => ({
+      type: sortType,
+      isChecked: index === 0,
+      isDisabled: disabledSortType[sortType],
+    }));
+}
+
+const startSort = (events, sortType) => sort[sortType](events);
+
+export {
+  generateSort,
+  startSort,
+};
