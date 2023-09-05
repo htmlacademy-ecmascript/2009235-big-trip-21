@@ -1,14 +1,12 @@
 import {render, RenderPosition} from './framework/render.js';
 
-import FiltersView from './view/filters-view.js';
 import InfoView from './view/info-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 
 import EventsModel from './model/event-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
-
-import {generateFilter} from './utils/filter.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -22,12 +20,9 @@ const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
 
 const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, eventsModel, destinationsModel, offersModel});
-
-render(new FiltersView({
-  filters: generateFilter(),
-  onFilterTypeChange: () => {},
-}), tripFiltersElement);
+const filterPresenter = new FilterPresenter({filterContainer: tripFiltersElement});
 
 render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 
+filterPresenter.init();
 boardPresenter.init();

@@ -1,11 +1,11 @@
 import {render} from '../framework/render.js';
-import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType} from '../const.js';
 import EventPresenter from './event-presenter.js';
 import {updateEventItem} from '../utils/event.js';
-import {startSort, generateSort} from '../utils/sort.js';
+import SortPresenter from './sort-presenter.js';
+import {startSort} from '../utils/sort.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -17,7 +17,6 @@ export default class BoardPresenter {
   #eventPresenters = new Map();
   #currentSortType = SortType.DAY;
 
-  #sortComponent = null;
   #eventsListComponent = new EventsListView();
 
   constructor({boardContainer, eventsModel, destinationsModel, offersModel}) {
@@ -53,12 +52,12 @@ export default class BoardPresenter {
   }
 
   #renderSort() {
-    this.#sortComponent = new SortView({
-      sorting: generateSort(),
+    const sortPresenter = new SortPresenter({
+      sortContainer: this.#boardContainer,
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
-    render(this.#sortComponent, this.#boardContainer);
+    sortPresenter.init();
   }
 
   #renderList() {
