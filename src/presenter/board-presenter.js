@@ -29,7 +29,6 @@ export default class BoardPresenter {
   init() {
     this.#boardEvents = [...this.#eventsModel.events];
 
-
     this.#renderBoard();
 
     //this.#addEventButtonClick();
