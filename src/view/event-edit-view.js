@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizeEventDueDate} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
 
@@ -31,7 +31,7 @@ function createEventEditButtonsTemplate() {
 }
 
 function createEventDestinationsTemplate(eventDestination) {
-  if (eventDestination.pictures.length > 0 || eventDestination.description) {
+  if (eventDestination) {
     return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       ${eventDestination.description ?
@@ -90,10 +90,10 @@ function createEventEditTypeTemplate(offersTypes, currentOffer) {
 
 
 function createEventEditTemplate(event, destinations, offers) {
-  const {basePrice, dateFrom, dateTo, destination, type, add} = event;
+  const {basePrice, dateFrom, dateTo, currentDestination, add, currentOffer} = event;
 
-  const eventDestination = destinations.find((allDestinatio) => allDestinatio.name.toLowerCase() === destination.toLowerCase());
-  const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === type.toLowerCase()).offers;
+  const eventDestination = destinations.find((allDestination) => allDestination.name.toLowerCase() === currentDestination.toLowerCase());
+  const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === currentOffer.toLowerCase()).offers;
   const offersTypes = offers.map((offer) => offer.type);
 
   const startDateTimeInInput = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_INPUT);
@@ -106,23 +106,23 @@ function createEventEditTemplate(event, destinations, offers) {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${currentOffer}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createEventEditTypeTemplate(offersTypes, type)}
+              ${createEventEditTypeTemplate(offersTypes, currentOffer)}
             </fieldset>
           </div>
         </div>
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type}
+            ${currentOffer}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -157,8 +157,8 @@ function createEventEditTemplate(event, destinations, offers) {
   );
 }
 
-export default class EventEditView extends AbstractView {
-  #event = [];
+export default class EventEditView extends AbstractStatefulView {
+  //#event = [];
   #destinations = [];
   #offers = [];
 
@@ -175,7 +175,8 @@ export default class EventEditView extends AbstractView {
     onEventEditRollup,
   }) {
     super();
-    this.#event = event;
+    //this.#event = event;
+    this._setState(EventEditView.parseEventToState(event));
     this.#destinations = destinations;
     this.#offers = offers;
 
@@ -183,6 +184,10 @@ export default class EventEditView extends AbstractView {
     this.#handleEventEditReset = onEventEditReset;
     this.#handleEventEditRollup = onEventEditRollup;
 
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element
       .querySelector('form')
       .addEventListener('submit', this.#eventEditSubmitHandler);
@@ -191,20 +196,42 @@ export default class EventEditView extends AbstractView {
       .querySelector('.event__reset-btn')
       .addEventListener('click', this.#eventEditResetHandler);
 
-    if (!event.add) {
+    if (!this._state.add) {
       this.element
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#eventEditRollupHandler);
     }
+    /*-------*/
+    this.element
+      .querySelector('.event__type-group')
+      .addEventListener('change', this.#eventEditTypeHandler);
+
+    //Решить проблему с отсутствием
+    /*this.element
+      .querySelector('.event__available-offers')
+      .addEventListener('change', this.#eventEditOffersHandler);*/
+
+    /*-------*/
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('input', this.#destinationInputHandler);
+
+    this.element.querySelector('.event__input[name="event-start-time"]')
+      .addEventListener('change', this.#dateFromInputHandler);
+
+    this.element.querySelector('.event__input[name="event-end-time"]')
+      .addEventListener('change', this.#dateToInputHandler);
+
+    this.element.querySelector('.event__input--price')
+      .addEventListener('input', this.#basePriceInputHandler);
   }
 
   get template() {
-    return createEventEditTemplate(this.#event, this.#destinations, this.#offers);
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
   }
 
   #eventEditSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEventEditSubmit(this.#event);
+    this.#handleEventEditSubmit(EventEditView.parseStateToEvent(this._state));
   };
 
   #eventEditResetHandler = (evt) => {
@@ -216,4 +243,73 @@ export default class EventEditView extends AbstractView {
     evt.preventDefault();
     this.#handleEventEditRollup();
   };
+
+  /*--------*/
+  #eventEditTypeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      currentOffer: evt.target.value,
+    });
+    this._setState({
+      type: evt.target.value,
+    });
+  };
+
+  #eventEditOffersHandler = (evt) => {
+    evt.preventDefault();
+    console.log(evt.target.name); //нужен id Offer !!!
+    console.log(this._state);
+    /*this._setState({
+      type: evt.target.value,
+    });*/
+
+  };
+
+  /*-------*/
+  #destinationInputHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      currentDestination: evt.target.value,
+    });
+    this._setState({
+      destination: evt.target.value,
+    });
+  };
+
+  #dateFromInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      dateFrom: evt.target.value,
+    });
+  };
+
+  #dateToInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      dateTo: evt.target.value,
+    });
+  };
+
+  #basePriceInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+  /*----------*/
+  static parseEventToState(event) {
+    return {...event,
+      currentOffer: event.type,
+      currentDestination: event.destination,
+    };
+  }
+
+  static parseStateToEvent(state) {
+    const event = {...state};
+
+    delete event.currentOffer;
+    delete event.currentDestination;
+    return event;
+  }
 }
