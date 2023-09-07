@@ -1,6 +1,9 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {humanizeEventDueDate} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_EVENT = {
   basePrice: 0,
@@ -157,6 +160,8 @@ function createEventEditTemplate(event, destinations, offers) {
 export default class EventEditView extends AbstractStatefulView {
   #destinations = [];
   #offers = [];
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   #handleEventEditSubmit = () => {};
   #handleEventEditReset = () => {};
@@ -180,6 +185,22 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleEventEditRollup = onEventEditRollup;
 
     this._restoreHandlers();
+  }
+
+  // Перегружаем метод родителя removeElement,
+  // чтобы при удалении удалялся более не нужный календарь
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
   }
 
   reset(event) {
@@ -217,14 +238,10 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination')
       .addEventListener('input', this.#destinationInputHandler);
 
-    this.element.querySelector('.event__input[name="event-start-time"]')
-      .addEventListener('change', this.#dateFromInputHandler);
-
-    this.element.querySelector('.event__input[name="event-end-time"]')
-      .addEventListener('change', this.#dateToInputHandler);
-
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#basePriceInputHandler);
+
+    this.#setDatepicker();
   }
 
   get template() {
@@ -260,7 +277,7 @@ export default class EventEditView extends AbstractStatefulView {
   #eventEditOffersHandler = (evt) => {
     evt.preventDefault();
     const eventAllOffers = this.#offers.find((allOffer) => allOffer.type.toLowerCase() === this._state.currentOffer.toLowerCase()).offers; //вынести отдельно
-    const offerID = eventAllOffers.find((allOffer) => allOffer.title.toLowerCase() === evt.target.name.toLowerCase()).id;
+    const offerID = eventAllOffers.find((allOffer) => allOffer.title.toLowerCase() === evt.target.name.toLowerCase()).id; //вынести отдельно
     const oldEventOffers = this._state.offers;
 
     let newEventOffers = oldEventOffers;
@@ -286,20 +303,6 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #dateFromInputHandler = (evt) => {
-    evt.preventDefault();
-    this._setState({
-      dateFrom: evt.target.value,
-    });
-  };
-
-  #dateToInputHandler = (evt) => {
-    evt.preventDefault();
-    this._setState({
-      dateTo: evt.target.value,
-    });
-  };
-
   #basePriceInputHandler = (evt) => {
     evt.preventDefault();
     this._setState({
@@ -322,5 +325,40 @@ export default class EventEditView extends AbstractStatefulView {
     delete event.currentDestination;
 
     return event;
+  }
+
+  /*----*/
+  #dueDateFromChangeHandler = ([dateStart]) => {
+    this.updateElement({
+      dateFrom: dateStart,
+    });
+  };
+
+  #dueDateToChangeHandler = ([dateEnd]) => {
+    this.updateElement({
+      dateTo: dateEnd,
+    });
+  };
+
+  #setDatepicker() {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('.event__input[name="event-start-time"]'),
+      {
+        enableTime: true,
+        time_24hr: true, // eslint-disable-line
+        defaultDate: this._state.dateFrom,
+        onClose: this.#dueDateFromChangeHandler,
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('.event__input[name="event-end-time"]'),
+      {
+        enableTime: true,
+        time_24hr: true, // eslint-disable-line
+        defaultDate: this._state.dateTo,
+        onClose: this.#dueDateToChangeHandler,
+      },
+    );
   }
 }

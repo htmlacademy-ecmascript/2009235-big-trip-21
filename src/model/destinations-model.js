@@ -10,8 +10,4 @@ export default class DestinationsModel {
   get destinations() {
     return this.#destinations;
   }
-
-  getByName(eventDestination) {
-    return this.#destinations.find((destination) => destination.name.toLowerCase() === eventDestination.toLowerCase());
-  }
 }
