@@ -74,13 +74,13 @@ function createEventOffersTemplate(eventAllOffers, eventOffers) {
   return '';
 }
 
-function createEventEditTypeTemplate(offersTypes, currentOffer) {
-  const capitalizedOffersTypes = (offersType) => offersType.replace(offersType[0], offersType[0].toUpperCase());
-  if (offersTypes.length > 0) {
-    return offersTypes.map((offersType) => `
+function createEventEditTypeTemplate(offers, currentOffer) {
+  const capitalizedOffersTypes = (offerType) => offerType.replace(offerType[0], offerType[0].toUpperCase());
+  if (offers.length > 0) {
+    return offers.map((offer) => `
     <div class="event__type-item">
-      <input id="event-type-${offersType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offersType}" ${currentOffer === offersType ? 'checked' : ''}>
-      <label class="event__type-label  event__type-label--${offersType}" for="event-type-${offersType}-1">${capitalizedOffersTypes(offersType)}</label>
+      <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}" ${currentOffer === offer.type ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${capitalizedOffersTypes(offer.type)}</label>
     </div>
   `).join('');
   }
@@ -94,7 +94,6 @@ function createEventEditTemplate(event, destinations, offers) {
 
   const eventDestination = destinations.find((allDestination) => allDestination.name.toLowerCase() === currentDestination.toLowerCase());
   const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === currentOffer.toLowerCase()).offers;
-  const offersTypes = offers.map((offer) => offer.type);
 
   const startDateTimeInInput = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_INPUT);
   const endDateTimeInInput = humanizeEventDueDate(dateTo, DateTimeFormat.DATE_TIME_IN_INPUT);
@@ -113,7 +112,7 @@ function createEventEditTemplate(event, destinations, offers) {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createEventEditTypeTemplate(offersTypes, currentOffer)}
+              ${createEventEditTypeTemplate(offers, currentOffer)}
             </fieldset>
           </div>
         </div>
@@ -124,9 +123,7 @@ function createEventEditTemplate(event, destinations, offers) {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
           </datalist>
         </div>
 
@@ -158,7 +155,6 @@ function createEventEditTemplate(event, destinations, offers) {
 }
 
 export default class EventEditView extends AbstractStatefulView {
-  //#event = [];
   #destinations = [];
   #offers = [];
 
@@ -175,7 +171,6 @@ export default class EventEditView extends AbstractStatefulView {
     onEventEditRollup,
   }) {
     super();
-    //this.#event = event;
     this._setState(EventEditView.parseEventToState(event));
     this.#destinations = destinations;
     this.#offers = offers;
@@ -185,6 +180,12 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleEventEditRollup = onEventEditRollup;
 
     this._restoreHandlers();
+  }
+
+  reset(event) {
+    this.updateElement(
+      EventEditView.parseEventToState(event),
+    );
   }
 
   _restoreHandlers() {
@@ -206,11 +207,12 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__type-group')
       .addEventListener('change', this.#eventEditTypeHandler);
 
-    //Решить проблему с отсутствием
-    /*this.element
-      .querySelector('.event__available-offers')
-      .addEventListener('change', this.#eventEditOffersHandler);*/
-
+    //не забыть вынести отдельно
+    if ((this.#offers.find((allOffer) => allOffer.type.toLowerCase() === this._state.currentOffer.toLowerCase()).offers).length > 0) {
+      this.element
+        .querySelector('.event__available-offers')
+        .addEventListener('change', this.#eventEditOffersHandler);
+    }
     /*-------*/
     this.element.querySelector('.event__input--destination')
       .addEventListener('input', this.#destinationInputHandler);
@@ -257,12 +259,20 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventEditOffersHandler = (evt) => {
     evt.preventDefault();
-    console.log(evt.target.name); //нужен id Offer !!!
-    console.log(this._state);
-    /*this._setState({
-      type: evt.target.value,
-    });*/
+    const eventAllOffers = this.#offers.find((allOffer) => allOffer.type.toLowerCase() === this._state.currentOffer.toLowerCase()).offers; //вынести отдельно
+    const offerID = eventAllOffers.find((allOffer) => allOffer.title.toLowerCase() === evt.target.name.toLowerCase()).id;
+    const oldEventOffers = this._state.offers;
 
+    let newEventOffers = oldEventOffers;
+    if (evt.target.checked) {
+      newEventOffers.push(offerID);
+    } else {
+      newEventOffers = newEventOffers.filter((id) => id !== offerID);
+    }
+
+    this._setState({
+      offers: newEventOffers,
+    });
   };
 
   /*-------*/
@@ -310,6 +320,7 @@ export default class EventEditView extends AbstractStatefulView {
 
     delete event.currentOffer;
     delete event.currentDestination;
+
     return event;
   }
 }
