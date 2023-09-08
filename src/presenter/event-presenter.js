@@ -50,9 +50,6 @@ export default class EventPresenter {
       onEventRollup: this.#handleEventRollup,
     });
 
-    //this.#offersModel.getByType(event.type)) NO
-    //const offersTypes = offers.map((offer) => offer.type);
-    //this.#destinationsModel.getByName(event.destination)) NO
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
       destinations: this.#boardDestinations,

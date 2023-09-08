@@ -60,10 +60,10 @@ function createEventOffersTemplate(eventAllOffers, eventOffers) {
 
     <div class="event__available-offers">
       ${eventAllOffers.map((eventAllOffer) => {
-    const checked = eventOffers.find((eventOffer) => eventOffer === eventAllOffer.id);
+    const checked = eventOffers.includes(eventAllOffer.id);
     return `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="${eventAllOffer.title}" type="checkbox" name="${eventAllOffer.title}" ${checked ? 'checked' : ''}>
-        <label class="event__offer-label" for="${eventAllOffer.title}">
+        <input class="event__offer-checkbox  visually-hidden" id="${eventAllOffer.title}-${eventAllOffer.id}" type="checkbox" name="${eventAllOffer.title}" ${checked ? 'checked' : ''} data-offer-id="${eventAllOffer.id}">
+        <label class="event__offer-label" for="${eventAllOffer.title}-${eventAllOffer.id}">
           <span class="event__offer-title">${eventAllOffer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${eventAllOffer.price}</span>
@@ -228,12 +228,12 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__type-group')
       .addEventListener('change', this.#eventEditTypeHandler);
 
-    //не забыть вынести отдельно
-    if ((this.#offers.find((allOffer) => allOffer.type.toLowerCase() === this._state.currentOfferType.toLowerCase()).offers).length > 0) {
+    if (this.element.querySelector('.event__available-offers')) {
       this.element
         .querySelector('.event__available-offers')
         .addEventListener('change', this.#eventEditOffersHandler);
     }
+
     /*-------*/
     this.element.querySelector('.event__input--destination')
       .addEventListener('input', this.#destinationInputHandler);
@@ -276,15 +276,11 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventEditOffersHandler = (evt) => {
     evt.preventDefault();
-    const eventAllOffers = this.#offers.find((allOffer) => allOffer.type.toLowerCase() === this._state.currentOfferType.toLowerCase()).offers; //вынести отдельно
-    const offerID = eventAllOffers.find((allOffer) => allOffer.title.toLowerCase() === evt.target.name.toLowerCase()).id; //вынести отдельно
-    const oldEventOffers = this._state.offers;
-
-    let newEventOffers = oldEventOffers;
+    let newEventOffers = this._state.offers;
     if (evt.target.checked) {
-      newEventOffers.push(offerID);
+      newEventOffers.push(evt.target.dataset.offerId);
     } else {
-      newEventOffers = newEventOffers.filter((id) => id !== offerID);
+      newEventOffers = newEventOffers.filter((id) => id !== evt.target.dataset.offerId);
     }
 
     this._setState({
@@ -345,7 +341,7 @@ export default class EventEditView extends AbstractStatefulView {
       this.element.querySelector('.event__input[name="event-start-time"]'),
       {
         enableTime: true,
-        time_24hr: true, // eslint-disable-line
+        'time_24hr': true,
         defaultDate: this._state.dateFrom,
         onClose: this.#dueDateFromChangeHandler,
       },
@@ -355,7 +351,7 @@ export default class EventEditView extends AbstractStatefulView {
       this.element.querySelector('.event__input[name="event-end-time"]'),
       {
         enableTime: true,
-        time_24hr: true, // eslint-disable-line
+        'time_24hr': true,
         defaultDate: this._state.dateTo,
         onClose: this.#dueDateToChangeHandler,
       },
