@@ -50,8 +50,6 @@ export default class EventPresenter {
       onEventRollup: this.#handleEventRollup,
     });
 
-    //this.#offersModel.getByType(event.type))
-    //this.#destinationsModel.getByName(event.destination))
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
       destinations: this.#boardDestinations,
@@ -88,12 +86,14 @@ export default class EventPresenter {
   #onDocumentKeydownEscape = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
   };
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
   }
@@ -129,6 +129,7 @@ export default class EventPresenter {
   /*--------*/
 
   #handleEventEditRollup = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
