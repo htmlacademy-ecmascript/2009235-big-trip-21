@@ -61,6 +61,7 @@ function createEventOffersTemplate(eventAllOffers, eventOffers) {
     <div class="event__available-offers">
       ${eventAllOffers.map((eventAllOffer) => {
     const checked = eventOffers.includes(eventAllOffer.id);
+
     return `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="${eventAllOffer.title}-${eventAllOffer.id}" type="checkbox" name="${eventAllOffer.title}" ${checked ? 'checked' : ''} data-offer-id="${eventAllOffer.id}">
         <label class="event__offer-label" for="${eventAllOffer.title}-${eventAllOffer.id}">
