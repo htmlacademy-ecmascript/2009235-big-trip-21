@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {humanizeEventDueDate} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
+import {getEventDuration} from '../utils/event.js';
 
 function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
   if (eventOffers.length > 0) {
@@ -48,7 +49,7 @@ function createEventItemTemplate(event, eventTypeOffers) {
           —
           <time class="event__end-time" datetime="${endTimeInAtribut}">${endTimeInContent}</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${getEventDuration(dateTo, dateFrom)}</p>
       </div>
       <p class="event__price">
         €&nbsp;<span class="event__price-value">${basePrice}</span>

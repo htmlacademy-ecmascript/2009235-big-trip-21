@@ -61,6 +61,7 @@ function createEventOffersTemplate(eventAllOffers, eventOffers) {
     <div class="event__available-offers">
       ${eventAllOffers.map((eventAllOffer) => {
     const checked = eventOffers.includes(eventAllOffer.id);
+
     return `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="${eventAllOffer.title}-${eventAllOffer.id}" type="checkbox" name="${eventAllOffer.title}" ${checked ? 'checked' : ''} data-offer-id="${eventAllOffer.id}">
         <label class="event__offer-label" for="${eventAllOffer.title}-${eventAllOffer.id}">
@@ -143,7 +144,7 @@ function createEventEditTemplate(event, destinations, offers) {
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="[0-9]" value="${basePrice}">
         </div>
 
         ${add ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
@@ -291,19 +292,23 @@ export default class EventEditView extends AbstractStatefulView {
   /*-------*/
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    this.updateElement({
-      currentDestination: evt.target.value,
-    });
-    this._setState({
-      destination: evt.target.value,
-    });
+    if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
+      this.updateElement({
+        currentDestination: evt.target.value,
+      });
+      this._setState({
+        destination: evt.target.value,
+      });
+    }
   };
 
   #basePriceInputHandler = (evt) => {
     evt.preventDefault();
-    this._setState({
-      basePrice: evt.target.value,
-    });
+    if (/^[ 0-9]+$/i.test(evt.target.value)) {
+      this._setState({
+        basePrice: evt.target.value,
+      });
+    }
   };
 
   /*----------*/
