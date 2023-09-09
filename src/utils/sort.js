@@ -19,9 +19,8 @@ const sort = {
 
 function generateSort() {
   return Object.values(SortType)
-    .map((sortType, index) => ({
+    .map((sortType) => ({
       type: sortType,
-      isChecked: index === 0,
       isDisabled: disabledSortType[sortType],
     }));
 }
