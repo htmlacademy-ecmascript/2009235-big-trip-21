@@ -28,19 +28,11 @@ const getEventDuration = (dateA, dateB) => {
   }
 };
 
-/**
-* @param items Набор событий
-* @param update Обновленное событие
-* @returns Обновленный набор событий
-*/
-const updateEventItem = (events, updatedEvent) => events.map((event) => event.id === updatedEvent.id ? updatedEvent : event);
-
 export {
   humanizeEventDueDate,
   isEventFuture,
   isEventPresent,
   isEventPast,
-  updateEventItem,
   getDateDifference,
   getEventDuration,
 };

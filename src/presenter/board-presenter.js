@@ -3,7 +3,6 @@ import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType} from '../const.js';
 import EventPresenter from './event-presenter.js';
-import {updateEventItem} from '../utils/event.js';
 import SortPresenter from './sort-presenter.js';
 import {startSort} from '../utils/sort.js';
 
@@ -13,7 +12,6 @@ export default class BoardPresenter {
   #destinationsModel = [];
   #offersModel = [];
 
-  #boardEvents = [];
   #eventPresenters = new Map();
   #currentSortType = SortType.DAY;
 
@@ -24,25 +22,29 @@ export default class BoardPresenter {
     this.#eventsModel = eventsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+
+    //обработчик-наблюдатель, который реагирует на изменения модели this.#eventsModel и вызывает #handleModelEvent
+    this.#eventsModel.addObserver(this.#handleModelEvent);
+  }
+
+  get events() {
+    return startSort(this.#eventsModel.events, this.#currentSortType);
   }
 
   init() {
-    this.#boardEvents = [...this.#eventsModel.events];
-
     this.#renderBoard();
 
     //this.#addEventButtonClick();
   }
 
   #renderBoard() {
-    if (this.#boardEvents.length === 0) {
+    if (this.#eventsModel.events.length === 0) {
       this.#renderNoEvents();
       return;
     }
 
     this.#renderSort();
     this.#renderList();
-    this.#sortEvents(this.#currentSortType);
     this.#renderEvents();
   }
 
@@ -64,9 +66,7 @@ export default class BoardPresenter {
   }
 
   #renderEvents() {
-    this.#boardEvents.forEach((event) => {
-      this.#renderEventItem(event);
-    });
+    this.#eventsModel.events.forEach((event) => this.#renderEventItem(event));
   }
 
   #renderEventItem(event) {
@@ -74,7 +74,7 @@ export default class BoardPresenter {
       eventsListContainer: this.#eventsListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#handleEventDataChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
     eventPresenter.init(event);
@@ -86,27 +86,32 @@ export default class BoardPresenter {
     this.#eventPresenters.clear();
   }
 
-  #handleEventDataChange = (updatedEvent) => {
-    this.#boardEvents = updateEventItem(this.#boardEvents, updatedEvent);
-    //Находим презентер для обновленного события и отрисовываем
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
   };
 
   #handleModeChange = () => {
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #sortEvents(sortType) {
-    this.#boardEvents = startSort(this.#boardEvents, sortType);
-    this.#currentSortType = sortType;
-  }
-
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
 
-    this.#sortEvents(sortType);
+    this.#currentSortType = sortType;
 
     this.#clearEventsList();
     this.#renderEvents();

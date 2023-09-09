@@ -47,6 +47,18 @@ const MessageType = {
   FAILED_EVENTS_LOAD: 'Failed to load latest route information',
 };
 
+const UserAction = {
+  UPDATE_EVENT: 'UPDATE_EVENT',
+  ADD_EVENT: 'ADD_EVENT',
+  DELETE_EVENT: 'DELETE_EVENT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
 export {
   DateTimeFormat,
   FilterType,
@@ -54,4 +66,6 @@ export {
   disabledSortType,
   MessageType,
   MSEC_IN_HOUR,
+  UserAction,
+  UpdateType,
 };

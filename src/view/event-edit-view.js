@@ -144,7 +144,7 @@ function createEventEditTemplate(event, destinations, offers) {
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="[0-9]" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="^[ 0-9]+$" value="${basePrice}">
         </div>
 
         ${add ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
@@ -290,16 +290,16 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   /*-------*/
+  //как это должно проверяться?
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
-      this.updateElement({
-        currentDestination: evt.target.value,
-      });
-      this._setState({
-        destination: evt.target.value,
-      });
-    }
+    //if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
+    this.updateElement({
+      currentDestination: evt.target.value,
+    });
+    this._setState({
+      destination: evt.target.value,
+    });
   };
 
   #basePriceInputHandler = (evt) => {
