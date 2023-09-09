@@ -4,7 +4,19 @@ const DateTimeFormat = {
   DATE_IN_ATRIBUT: 'DD-MM-YYYY',
   DATE_TIME_IN_ATRIBUT: 'DD-MM-YYYYTHH:mm',
   DATE_TIME_IN_INPUT: 'DD/MM/YYYY HH:mm',
+  DAY_HOUR_MIN: 'DD[D] HH[H] mm[M]',
+  HOUR_MIN: 'HH[H] mm[M]',
+  MIN: 'mm[M]',
 };
+
+const MeasureTime = {
+  MSEC_IN_SEC: 1000,
+  SEC_IN_MIN: 60,
+  MIN_IN_HOUR: 60,
+  HOUR_IN_DAY: 24,
+};
+
+const MSEC_IN_HOUR = MeasureTime.MIN_IN_HOUR * MeasureTime.SEC_IN_MIN * MeasureTime.MSEC_IN_SEC;
 
 const FilterType = {
   EVERYTHING: 'everything',
@@ -41,4 +53,5 @@ export {
   SortType,
   disabledSortType,
   MessageType,
+  MSEC_IN_HOUR,
 };
