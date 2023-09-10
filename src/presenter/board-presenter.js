@@ -1,17 +1,20 @@
-import {render, remove, RenderPosition} from '../framework/render.js';
+import {render, remove} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType, UpdateType, UserAction} from '../const.js';
 import EventPresenter from './event-presenter.js';
 import SortView from '../view/sort-view.js';
 import {startSort, generateSort} from '../utils/sort.js';
+import {startFilter} from '../utils/filter.js';
+
 //import EventEditView from '../view/event-edit-view.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
-  #eventsModel = [];
-  #destinationsModel = [];
-  #offersModel = [];
+  #eventsModel = null;
+  #destinationsModel = null;
+  #offersModel = null;
+  #filterModel = null;
 
   #eventPresenters = new Map();
   #currentSortType = SortType.DAY;
@@ -20,18 +23,24 @@ export default class BoardPresenter {
   #sortComponent = null;
   #noEventsComponent = null;
 
-  constructor({boardContainer, eventsModel, destinationsModel, offersModel}) {
+  constructor({boardContainer, eventsModel, destinationsModel, offersModel, filterModel}) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
+    this.#filterModel = filterModel;
 
     //обработчик-наблюдатель, который реагирует на изменения модели this.#eventsModel и вызывает #handleModelEvent
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
-    return startSort(this.#eventsModel.events, this.#currentSortType);
+    const filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = startFilter(events, filterType);
+
+    return startSort(filteredEvents, this.#currentSortType);
   }
 
   init() {
@@ -41,19 +50,21 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
-    if (this.#eventsModel.events.length === 0) {
+    const events = this.events;
+    const eventsCount = events.length;
+
+    if (eventsCount === 0) {
       this.#renderNoEvents();
       return;
     }
 
     this.#renderSort();
-    this.#renderList();
-    this.#renderEvents();
+    render(this.#eventsListComponent, this.#boardContainer);
+    this.#renderEvents(events);
   }
 
   #renderNoEvents() {
     this.#noEventsComponent = new EventsMessageView(MessageType.NO_EVENTS);
-
     render(this.#noEventsComponent, this.#boardContainer);
   }
 
@@ -67,13 +78,8 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardContainer);
   }
 
-  #renderList() {
-    render(this.#eventsListComponent, this.#boardContainer);
-  }
-
-  #renderEvents() {
-    //startSort(this.#eventsModel.events, this.#currentSortType).forEach((event) => this.#renderEventItem(event));
-    this.#eventsModel.events.forEach((event) => this.#renderEventItem(event));
+  #renderEvents(events) {
+    events.forEach((event) => this.#renderEventItem(event));
   }
 
   #renderEventItem(event) {

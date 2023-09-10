@@ -7,6 +7,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import EventsModel from './model/event-model.js';
 import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
+import FilterModel from './model/filters-model.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -18,9 +19,10 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 const eventsModel = new EventsModel();
 const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
+const filterModel = new FilterModel();
 
-const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, eventsModel, destinationsModel, offersModel});
-const filterPresenter = new FilterPresenter({filterContainer: tripFiltersElement});
+const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, eventsModel, destinationsModel, offersModel, filterModel});
+const filterPresenter = new FilterPresenter({filterContainer: tripFiltersElement, eventsModel, filterModel});
 
 render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 

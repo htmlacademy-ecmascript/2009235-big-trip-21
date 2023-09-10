@@ -6,12 +6,12 @@ const compareMoreDuration = (eventA, eventB) => Math.abs(getDateDifference(event
 const compareMoreExpensive = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const sort = {
-  [SortType.DAY]: (events) => events.toSorted(compareMoreEarlyDay),
+  [SortType.DAY]: (events) => events.sort(compareMoreEarlyDay),
   [SortType.EVENT]: () => {
     throw new Error(`Sort by ${SortType.EVENT} is not implemented`);
   },
-  [SortType.TIME]: (events) => events.toSorted(compareMoreDuration),
-  [SortType.PRICE]: (events) => events.toSorted(compareMoreExpensive),
+  [SortType.TIME]: (events) => events.sort(compareMoreDuration),
+  [SortType.PRICE]: (events) => events.sort(compareMoreExpensive),
   [SortType.OFFERS]: () => {
     throw new Error(`Sort by ${SortType.OFFERS} is not implemented`);
   },
@@ -30,4 +30,5 @@ const startSort = (events, sortType) => sort[sortType](events);
 export {
   generateSort,
   startSort,
+  sort,
 };
