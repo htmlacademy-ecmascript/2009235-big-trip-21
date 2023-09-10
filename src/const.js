@@ -42,9 +42,12 @@ const disabledSortType = {
 };
 
 const MessageType = {
-  NO_EVENTS: 'Click New Event to create your first point',
   LOADING: 'Loading...',
   FAILED_EVENTS_LOAD: 'Failed to load latest route information',
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
 };
 
 const UserAction = {

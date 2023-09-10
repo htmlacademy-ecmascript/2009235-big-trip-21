@@ -1,7 +1,7 @@
 import {render, remove} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
-import {MessageType, SortType, UpdateType, UserAction} from '../const.js';
+import {MessageType, SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import EventPresenter from './event-presenter.js';
 import SortView from '../view/sort-view.js';
 import {startSort, generateSort} from '../utils/sort.js';
@@ -18,6 +18,7 @@ export default class BoardPresenter {
 
   #eventPresenters = new Map();
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
 
   #eventsListComponent = new EventsListView();
   #sortComponent = null;
@@ -36,9 +37,9 @@ export default class BoardPresenter {
   }
 
   get events() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const events = this.#eventsModel.events;
-    const filteredEvents = startFilter(events, filterType);
+    const filteredEvents = startFilter(events, this.#filterType);
 
     return startSort(filteredEvents, this.#currentSortType);
   }
@@ -64,7 +65,7 @@ export default class BoardPresenter {
   }
 
   #renderNoEvents() {
-    this.#noEventsComponent = new EventsMessageView(MessageType.NO_EVENTS);
+    this.#noEventsComponent = new EventsMessageView(MessageType[this.#filterType]);
     render(this.#noEventsComponent, this.#boardContainer);
   }
 
