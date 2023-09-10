@@ -167,6 +167,8 @@ export default class EventEditView extends AbstractStatefulView {
   #handleEventEditSubmit = () => {};
   #handleEventEditReset = () => {};
   #handleEventEditRollup = () => {};
+  #handleEventAddSubmit = () => {};
+  #handleEventAddReset = () => {};
 
   constructor({
     event = BLANK_EVENT,
@@ -175,6 +177,8 @@ export default class EventEditView extends AbstractStatefulView {
     onEventEditSubmit,
     onEventEditReset,
     onEventEditRollup,
+    onEventAddSubmit,
+    onEventAddReset,
   }) {
     super();
     this._setState(EventEditView.parseEventToState(event));
@@ -184,6 +188,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleEventEditSubmit = onEventEditSubmit;
     this.#handleEventEditReset = onEventEditReset;
     this.#handleEventEditRollup = onEventEditRollup;
+    this.#handleEventAddSubmit = onEventAddSubmit;
+    this.#handleEventAddReset = onEventAddReset;
 
     this._restoreHandlers();
   }
@@ -211,18 +217,26 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element
-      .querySelector('form')
-      .addEventListener('submit', this.#eventEditSubmitHandler);
-
-    this.element
-      .querySelector('.event__reset-btn')
-      .addEventListener('click', this.#eventEditResetHandler);
-
     if (!this._state.add) {
       this.element
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#eventEditRollupHandler);
+
+      this.element
+        .querySelector('form')
+        .addEventListener('submit', this.#eventEditSubmitHandler);
+
+      this.element
+        .querySelector('.event__reset-btn')
+        .addEventListener('click', this.#eventEditResetHandler);
+    } else {
+      this.element
+        .querySelector('form')
+        .addEventListener('submit', this.#eventAddSubmitHandler);
+
+      this.element
+        .querySelector('.event__reset-btn')
+        .addEventListener('click', this.#eventAddResetHandler);
     }
     /*-------*/
     this.element
@@ -249,19 +263,36 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#destinations, this.#offers);
   }
 
+  /*-----*/
+  //SAVE
   #eventEditSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditSubmit(EventEditView.parseStateToEvent(this._state));
   };
 
+  //DELETE
   #eventEditResetHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEventEditReset();
+    this.#handleEventEditReset(EventEditView.parseStateToEvent(this._state));
   };
 
+  //CLOSE
   #eventEditRollupHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditRollup();
+  };
+
+  /*-----*/
+  //ADD
+  #eventAddSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEventAddSubmit(EventEditView.parseStateToEvent(this._state));
+  };
+
+  //CLOSE
+  #eventAddResetHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEventAddReset();
   };
 
   /*--------*/
@@ -290,7 +321,6 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   /*-------*/
-  //как это должно проверяться?
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
     //if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {

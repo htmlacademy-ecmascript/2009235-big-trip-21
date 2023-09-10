@@ -28,6 +28,9 @@ const getEventDuration = (dateA, dateB) => {
   }
 };
 
+//проверка на изменение даты, для выяснения попадает ли задача под фильт
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+
 export {
   humanizeEventDueDate,
   isEventFuture,
@@ -35,4 +38,5 @@ export {
   isEventPast,
   getDateDifference,
   getEventDuration,
+  isDatesEqual,
 };

@@ -1,10 +1,11 @@
-import {render, remove} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType, UpdateType, UserAction} from '../const.js';
 import EventPresenter from './event-presenter.js';
 import SortView from '../view/sort-view.js';
 import {startSort, generateSort} from '../utils/sort.js';
+//import EventEditView from '../view/event-edit-view.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -161,12 +162,12 @@ export default class BoardPresenter {
 
   #renderEventAdd() {
     const eventAddComponent = new EventEditView({
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
-      onEventEditSubmit: () => {
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
+      onEventAddSubmit: () => {
         remove(eventAddComponent);
       },
-      onEventEditReset: () => {
+      onEventAddReset: () => {
         remove(eventAddComponent);
       },
     });
