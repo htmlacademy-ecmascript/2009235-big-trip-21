@@ -12,6 +12,7 @@ import FilterModel from './model/filters-model.js';
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
+const addEventButtonElement = siteHeaderElement.querySelector('.trip-main__event-add-btn');
 
 const siteMainElement = document.querySelector('.page-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
@@ -21,8 +22,31 @@ const destinationsModel = new DestinationsModel();
 const offersModel = new OffersModel();
 const filterModel = new FilterModel();
 
-const boardPresenter = new BoardPresenter({boardContainer: tripEventsElement, eventsModel, destinationsModel, offersModel, filterModel});
-const filterPresenter = new FilterPresenter({filterContainer: tripFiltersElement, eventsModel, filterModel});
+const boardPresenter = new BoardPresenter({
+  boardContainer: tripEventsElement,
+  eventsModel,
+  destinationsModel,
+  offersModel,
+  filterModel,
+  onNewEventDestroy: handleNewEventFormClose,
+});
+
+const filterPresenter = new FilterPresenter({
+  filterContainer: tripFiltersElement,
+  eventsModel,
+  filterModel,
+});
+
+addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
+
+function handleNewEventFormClose() {
+  addEventButtonElement.disabled = false;
+}
+
+function handleNewEventButtonClick() {
+  boardPresenter.createEvent();
+  addEventButtonElement.disabled = true;
+}
 
 render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
 

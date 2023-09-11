@@ -6,8 +6,7 @@ import EventPresenter from './event-presenter.js';
 import SortView from '../view/sort-view.js';
 import {startSort, generateSort} from '../utils/sort.js';
 import {startFilter} from '../utils/filter.js';
-
-//import EventEditView from '../view/event-edit-view.js';
+import NewEventPresenter from './new-event-presenter.js';
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -19,17 +18,28 @@ export default class BoardPresenter {
   #eventPresenters = new Map();
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #newEventPresenter = null;
 
   #eventsListComponent = new EventsListView();
   #sortComponent = null;
   #noEventsComponent = null;
+  #onNewEventDestroy = () => {};
 
-  constructor({boardContainer, eventsModel, destinationsModel, offersModel, filterModel}) {
+  constructor({boardContainer, eventsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy}) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+    this.#onNewEventDestroy = onNewEventDestroy;
+
+    this.#newEventPresenter = new NewEventPresenter({
+      eventsListContainer: this.#eventsListComponent.element,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#onNewEventDestroy,
+    });
 
     //обработчик-наблюдатель, который реагирует на изменения модели this.#eventsModel и вызывает #handleModelEvent
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -46,8 +56,12 @@ export default class BoardPresenter {
 
   init() {
     this.#renderBoard();
+  }
 
-    //this.#addEventButtonClick();
+  createEvent() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newEventPresenter.init();
   }
 
   #renderBoard() {
@@ -96,6 +110,7 @@ export default class BoardPresenter {
   }
 
   #clearBoard({resetSortType = false} = {}) {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
@@ -148,6 +163,7 @@ export default class BoardPresenter {
   };
 
   #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -161,23 +177,4 @@ export default class BoardPresenter {
     this.#clearBoard();
     this.#renderBoard();
   };
-
-  /*#addEventButtonClick() {
-    const addEventButton = document.querySelector('.trip-main__event-add-btn');
-    addEventButton.addEventListener('click', () => this.#renderEventAdd());
-  }
-
-  #renderEventAdd() {
-    const eventAddComponent = new EventEditView({
-      destinations: this.#destinationsModel.destinations,
-      offers: this.#offersModel.offers,
-      onEventAddSubmit: () => {
-        remove(eventAddComponent);
-      },
-      onEventAddReset: () => {
-        remove(eventAddComponent);
-      },
-    });
-    render(eventAddComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
-  }*/
 }

@@ -7,13 +7,12 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_EVENT = {
   basePrice: 0,
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  destination: 'Amsterdam',
+  dateFrom: null,
+  dateTo: null,
+  destination: '',
   isFavorite: false,
   offers: [],
-  type: 'taxi',
-  add: true,
+  type: 'flight',
 };
 
 function createEventAddButtonsTemplate() {
@@ -92,9 +91,21 @@ function createEventEditTypeTemplate(offers, currentOfferType) {
   return '';
 }
 
+function createEventDetails (eventAllOffers, eventOffers, eventDestination) {
+  if (eventAllOffers.length > 0 || eventDestination) {
+    return (
+      `<section class="event__details">
+      ${createEventOffersTemplate(eventAllOffers, eventOffers)}
+      ${createEventDestinationsTemplate(eventDestination)}
+      </section>`
+    );
+  }
 
-function createEventEditTemplate(event, destinations, offers) {
-  const {basePrice, dateFrom, dateTo, currentDestination, add, currentOfferType} = event;
+  return '';
+}
+
+function createEventEditTemplate(event, destinations, offers, isAddEvent) {
+  const {basePrice, dateFrom, dateTo, currentDestination, currentOfferType} = event;
 
   const eventDestination = destinations.find((allDestination) => allDestination.name.toLowerCase() === currentDestination.toLowerCase());
   const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === currentOfferType.toLowerCase()).offers;
@@ -147,12 +158,9 @@ function createEventEditTemplate(event, destinations, offers) {
           <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="^[ 0-9]+$" value="${basePrice}">
         </div>
 
-        ${add ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
+        ${isAddEvent ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
       </header>
-      <section class="event__details">
-      ${createEventOffersTemplate(eventAllOffers, event.offers)}
-      ${createEventDestinationsTemplate(eventDestination)}
-      </section>
+      ${createEventDetails(eventAllOffers, event.offers, eventDestination)}
     </form>
   </li>`
   );
@@ -163,12 +171,11 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = [];
   #datepickerFrom = null;
   #datepickerTo = null;
+  #isAddEvent = null;
 
   #handleEventEditSubmit = () => {};
   #handleEventEditReset = () => {};
   #handleEventEditRollup = () => {};
-  #handleEventAddSubmit = () => {};
-  #handleEventAddReset = () => {};
 
   constructor({
     event = BLANK_EVENT,
@@ -177,19 +184,16 @@ export default class EventEditView extends AbstractStatefulView {
     onEventEditSubmit,
     onEventEditReset,
     onEventEditRollup,
-    onEventAddSubmit,
-    onEventAddReset,
   }) {
     super();
     this._setState(EventEditView.parseEventToState(event));
     this.#destinations = destinations;
     this.#offers = offers;
+    this.#isAddEvent = event === BLANK_EVENT;
 
     this.#handleEventEditSubmit = onEventEditSubmit;
     this.#handleEventEditReset = onEventEditReset;
     this.#handleEventEditRollup = onEventEditRollup;
-    this.#handleEventAddSubmit = onEventAddSubmit;
-    this.#handleEventAddReset = onEventAddReset;
 
     this._restoreHandlers();
   }
@@ -217,26 +221,18 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    if (!this._state.add) {
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.#eventEditSubmitHandler);
+
+    this.element
+      .querySelector('.event__reset-btn')
+      .addEventListener('click', this.#eventEditResetHandler);
+
+    if (this.#isAddEvent === false) {
       this.element
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#eventEditRollupHandler);
-
-      this.element
-        .querySelector('form')
-        .addEventListener('submit', this.#eventEditSubmitHandler);
-
-      this.element
-        .querySelector('.event__reset-btn')
-        .addEventListener('click', this.#eventEditResetHandler);
-    } else {
-      this.element
-        .querySelector('form')
-        .addEventListener('submit', this.#eventAddSubmitHandler);
-
-      this.element
-        .querySelector('.event__reset-btn')
-        .addEventListener('click', this.#eventAddResetHandler);
     }
     /*-------*/
     this.element
@@ -260,39 +256,23 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#isAddEvent);
   }
 
   /*-----*/
-  //SAVE
   #eventEditSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditSubmit(EventEditView.parseStateToEvent(this._state));
   };
 
-  //DELETE
   #eventEditResetHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditReset(EventEditView.parseStateToEvent(this._state));
   };
 
-  //CLOSE
   #eventEditRollupHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditRollup();
-  };
-
-  /*-----*/
-  //ADD
-  #eventAddSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleEventAddSubmit(EventEditView.parseStateToEvent(this._state));
-  };
-
-  //CLOSE
-  #eventAddResetHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleEventAddReset();
   };
 
   /*--------*/
@@ -378,6 +358,7 @@ export default class EventEditView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
         onClose: this.#dueDateFromChangeHandler,
       },
     );
@@ -388,6 +369,7 @@ export default class EventEditView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
         onClose: this.#dueDateToChangeHandler,
       },
     );
