@@ -2,7 +2,7 @@ import {DateTimeFormat, MSEC_IN_HOUR} from '../const.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 dayjs.extend(duration);
-
+import he from 'he';
 
 const humanizeEventDueDate = (dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) => dueDate ? dayjs(dueDate).format(format) : '';
 
@@ -24,12 +24,14 @@ const getEventDuration = (dateA, dateB) => {
     case(eventDurationInMillisecond < MSEC_IN_HOUR):
       return dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.MIN);
     default:
-      return 0;
+      return '00M';
   }
 };
 
 //проверка на изменение даты, для выяснения попадает ли задача под фильт
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+
+const heEncode = (value) => he.encode(value);
 
 export {
   humanizeEventDueDate,
@@ -39,4 +41,5 @@ export {
   getDateDifference,
   getEventDuration,
   isDatesEqual,
+  heEncode,
 };

@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeEventDueDate} from '../utils/event.js';
+import {humanizeEventDueDate, heEncode} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
 import {getEventDuration} from '../utils/event.js';
 
@@ -42,7 +42,7 @@ function createEventItemTemplate(event, eventTypeOffers) {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination}</h3>
+      <h3 class="event__title">${type} ${heEncode(destination)}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${startTimeInAtribut}">${startTimeInContent}</time>

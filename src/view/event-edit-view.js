@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {humanizeEventDueDate} from '../utils/event.js';
+import {humanizeEventDueDate, heEncode} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
 import flatpickr from 'flatpickr';
 
@@ -136,7 +136,7 @@ function createEventEditTemplate(event, destinations, offers, isAddEvent) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${currentOfferType}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${heEncode(currentDestination)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
           </datalist>
@@ -247,7 +247,7 @@ export default class EventEditView extends AbstractStatefulView {
 
     /*-------*/
     this.element.querySelector('.event__input--destination')
-      .addEventListener('input', this.#destinationInputHandler);
+      .addEventListener('change', this.#destinationInputHandler);
 
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#basePriceInputHandler);
