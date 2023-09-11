@@ -114,7 +114,6 @@ export default class BoardPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
-    remove(this.#eventsListComponent);
     remove(this.#sortComponent);
     remove(this.#noEventsComponent);
 
