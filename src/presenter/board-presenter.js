@@ -65,17 +65,17 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
-    const events = this.events;
-    const eventsCount = events.length;
+    //const events = this.events;
+    //const eventsCount = events.length; //убраны константы для изменения значений
 
-    if (eventsCount === 0) {
+    if (this.events.length === 0) {
       this.#renderNoEvents();
       return;
     }
 
     this.#renderSort();
     render(this.#eventsListComponent, this.#boardContainer);
-    this.#renderEvents(events);
+    this.#renderEvents(this.events);
   }
 
   #renderNoEvents() {

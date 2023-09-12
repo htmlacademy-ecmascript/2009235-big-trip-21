@@ -316,7 +316,7 @@ export default class EventEditView extends AbstractStatefulView {
     evt.preventDefault();
     if (/^[ 0-9]+$/i.test(evt.target.value)) {
       this._setState({
-        basePrice: evt.target.value,
+        basePrice: Number(evt.target.value),
       });
     }
   };

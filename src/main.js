@@ -1,8 +1,6 @@
-import {render, RenderPosition} from './framework/render.js';
-
-import InfoView from './view/info-view.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+import InfoPresenter from './presenter/info-presenter.js';
 
 import EventsModel from './model/event-model.js';
 import DestinationsModel from './model/destinations-model.js';
@@ -37,6 +35,13 @@ const filterPresenter = new FilterPresenter({
   filterModel,
 });
 
+const infoPresenter = new InfoPresenter({
+  infoContainer: tripMainElement,
+  eventsModel,
+  offersModel,
+  onBoardEventsChange: getBoardEvents,
+});
+
 addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
 
 function handleNewEventFormClose() {
@@ -48,7 +53,10 @@ function handleNewEventButtonClick() {
   addEventButtonElement.disabled = true;
 }
 
-render(new InfoView(), tripMainElement, RenderPosition.AFTERBEGIN);
+function getBoardEvents () {
+  return boardPresenter.events;
+}
 
 filterPresenter.init();
 boardPresenter.init();
+infoPresenter.init();

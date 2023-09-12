@@ -28,6 +28,14 @@ const getEventDuration = (dateA, dateB) => {
   }
 };
 
+const getInfoDatesTemplate = (firstDate, lastDate) => {
+  if (dayjs(firstDate).month() === dayjs(lastDate).month() && dayjs(firstDate).year() === dayjs(lastDate).year()) {
+    return `${dayjs(firstDate).format(DateTimeFormat.DATE)} — ${dayjs(lastDate).format(DateTimeFormat.DAY)}`;
+  }
+
+  return `${dayjs(firstDate).format(DateTimeFormat.DATE)} — ${dayjs(lastDate).format(DateTimeFormat.DATE)}`;
+};
+
 //проверка на изменение даты, для выяснения попадает ли задача под фильт
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
@@ -40,6 +48,7 @@ export {
   isEventPast,
   getDateDifference,
   getEventDuration,
+  getInfoDatesTemplate,
   isDatesEqual,
   heEncode,
 };

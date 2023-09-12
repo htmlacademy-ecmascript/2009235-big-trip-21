@@ -1,5 +1,6 @@
 const DateTimeFormat = {
   DATE: 'MMM DD',
+  DAY: 'DD',
   TIME: 'HH:mm',
   DATE_IN_ATRIBUT: 'DD-MM-YYYY',
   DATE_TIME_IN_ATRIBUT: 'DD-MM-YYYYTHH:mm',
