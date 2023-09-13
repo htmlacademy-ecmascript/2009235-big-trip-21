@@ -16,7 +16,7 @@ function createInfoTitleTemplate (events) {
 function createInfoTemplate(events, offers) {
   const eventsWhithDateFrom = events.filter(({dateFrom}) => dateFrom !== null);
   const eventsWhithDateTo = events.filter(({dateTo}) => dateTo !== null);
-  const eventsWhithDestination = events.filter(({destination}) => destination !== null);
+  const eventsWhithDestination = events.filter(({destination}) => destination !== null && (destination !== ''));
 
   const eventsPrices = events.map((event) => {
     if (event.offers.length === 0) {
