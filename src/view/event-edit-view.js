@@ -305,7 +305,6 @@ export default class EventEditView extends AbstractStatefulView {
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
     //если destination не выбран, то какое значение должно быть null или '' ?
-    //this.#destinations.map(({name}) => name).includes(evt.target.value)
     if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
       const newEventDestination = this.#destinations.find(({name}) => name === evt.target.value).id;
       this.updateElement({

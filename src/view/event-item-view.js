@@ -48,9 +48,9 @@ function createEventItemTemplate(event, eventTypeOffers, destinations) {
       <h3 class="event__title">${type} ${heEncode(eventDestinationName)}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${startTimeInAtribut}">${startTimeInContent}</time>
+          <time class="event__start-time" datetime="${startTimeInAtribut}">${startTimeInContent ? startTimeInContent : '&infin;'}</time>
           —
-          <time class="event__end-time" datetime="${endTimeInAtribut}">${endTimeInContent}</time>
+          <time class="event__end-time" datetime="${endTimeInAtribut}">${endTimeInContent ? endTimeInContent : '&infin;'}</time>
         </p>
         <p class="event__duration">${getEventDuration(dateTo, dateFrom)}</p>
       </div>
