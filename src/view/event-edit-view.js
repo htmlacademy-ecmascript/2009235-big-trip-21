@@ -107,7 +107,8 @@ function createEventDetails (eventAllOffers, eventOffers, eventDestination) {
 function createEventEditTemplate(event, destinations, offers, isAddEvent) {
   const {basePrice, dateFrom, dateTo, currentDestination, currentOfferType} = event;
 
-  const eventDestination = destinations.find((allDestination) => allDestination.name.toLowerCase() === currentDestination.toLowerCase());
+  const eventDestination = destinations.find((destination) => destination.id === currentDestination);
+  const eventDestinationName = eventDestination ? eventDestination.name : currentDestination;
   const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === currentOfferType.toLowerCase()).offers;
 
   const startDateTimeInInput = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_INPUT);
@@ -136,7 +137,7 @@ function createEventEditTemplate(event, destinations, offers, isAddEvent) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${currentOfferType}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${heEncode(currentDestination)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${heEncode(eventDestinationName)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
           </datalist>
@@ -303,14 +304,24 @@ export default class EventEditView extends AbstractStatefulView {
   /*-------*/
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    //if (this.#destinations.map(({name}) => name).includes(evt.target.value))
     //если destination не выбран, то какое значение должно быть null или '' ?
-    this.updateElement({
-      currentDestination: evt.target.value,
-    });
-    this._setState({
-      destination: evt.target.value,
-    });
+    //this.#destinations.map(({name}) => name).includes(evt.target.value)
+    if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
+      const newEventDestination = this.#destinations.find(({name}) => name === evt.target.value).id;
+      this.updateElement({
+        currentDestination: newEventDestination,
+      });
+      this._setState({
+        destination: newEventDestination,
+      });
+    } else {
+      this.updateElement({
+        currentDestination: evt.target.value,
+      });
+      this._setState({
+        destination: '',
+      });
+    }
   };
 
   #basePriceInputHandler = (evt) => {

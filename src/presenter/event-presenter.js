@@ -48,6 +48,7 @@ export default class EventPresenter {
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
+      destinations: this.#boardDestinations,
       onEventFavorite: this.#handleEventFavorite,
       onEventRollup: this.#handleEventRollup,
     });
@@ -111,10 +112,6 @@ export default class EventPresenter {
     replace(this.#eventItemComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#onDocumentKeydownEscape);
     this.#mode = Mode.DEFAULT;
-  }
-
-  #removeCard() {
-    remove(this.#eventEditComponent);
   }
 
   #handleEventRollup = () => {

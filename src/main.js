@@ -38,6 +38,7 @@ const filterPresenter = new FilterPresenter({
 const infoPresenter = new InfoPresenter({
   infoContainer: tripMainElement,
   eventsModel,
+  destinationsModel,
   offersModel,
   onBoardEventsChange: getBoardEvents,
 });

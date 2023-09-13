@@ -45,7 +45,7 @@ const createEvent = () => ({
   basePrice: getRandomInteger(1000, 10000),
   dateFrom: new Date(getRandomArrayElement(eventDatesFrom)),
   dateTo: new Date(getRandomArrayElement(eventDatesTo)),
-  destination: getRandomArrayElement(eventDestinations).name,
+  destination: getRandomArrayElement(eventDestinations).id,
   isFavorite: getRandomBoolean(),
   type: addRandomnType(),
   offers: generateOffersID(offerType),

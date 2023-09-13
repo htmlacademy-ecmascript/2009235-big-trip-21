@@ -5,12 +5,14 @@ export default class EventPresenter {
   #infoContainer = null;
   #infoComponent = null;
   #eventsModel = null;
+  #destinationsModel = null;
   #offersModel = null;
   #onBoardEventsChange = () => {};
 
-  constructor({infoContainer, eventsModel, offersModel, onBoardEventsChange}) {
+  constructor({infoContainer, eventsModel, destinationsModel, offersModel, onBoardEventsChange}) {
     this.#infoContainer = infoContainer;
     this.#eventsModel = eventsModel;
+    this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#onBoardEventsChange = onBoardEventsChange;
 
@@ -18,7 +20,7 @@ export default class EventPresenter {
   }
 
   get events() {
-    //return this.#eventsModel.events; //может убрать eventsModel?
+    //return this.#eventsModel.events; //может убрать eventsModel? предпочтительней получать отсортированный массив
     return this.#onBoardEventsChange(); //можно ли импортировать import BoardPresenter from './presenter/board-presenter.js'?
   }
 
@@ -27,6 +29,7 @@ export default class EventPresenter {
 
     this.#infoComponent = new InfoView({
       events: this.events,
+      destinations: this.#destinationsModel.destinations,
       offers: this.#offersModel.offers,
     });
 
@@ -40,6 +43,11 @@ export default class EventPresenter {
   }
 
   #handleModelEvent = () => {
-    this.init();
+    if (this.events.length !== 0) {
+      this.init();
+    } else {
+      remove(this.#infoComponent);
+      this.#infoComponent = null;
+    }
   };
 }

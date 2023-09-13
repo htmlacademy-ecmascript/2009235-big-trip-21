@@ -1,22 +1,24 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {getInfoDatesTemplate} from '../utils/event.js';
 
-function createInfoTitleTemplate (events) {
-  if (events.length === 0) {
+function createInfoTitleTemplate (eventsDestinations) {
+  if (eventsDestinations.length === 0) {
     return 'No events whith destination';
   }
 
-  if (events.length <= 3) {
-    return `${events.map(({destination}, index) => index === 0 ? `${destination}` : ` — ${destination}`).join('')}`;
+  if (eventsDestinations.length <= 3) {
+    return `${eventsDestinations.map((destination, index) => index === 0 ? `${destination}` : ` — ${destination}`).join('')}`;
   }
 
-  return `${events[0].destination} — ... — ${events[events.length - 1].destination}`;
+  return `${eventsDestinations[0]} — ... — ${eventsDestinations[eventsDestinations.length - 1]}`;
 }
 
-function createInfoTemplate(events, offers) {
+function createInfoTemplate(events, destinations, offers) {
   const eventsWhithDateFrom = events.filter(({dateFrom}) => dateFrom !== null);
   const eventsWhithDateTo = events.filter(({dateTo}) => dateTo !== null);
-  const eventsWhithDestination = events.filter(({destination}) => destination !== null && (destination !== ''));
+  const eventsWhithDestination = events.filter(({destination}) => (destination !== null) && (destination !== ''));
+
+  const eventsDestinations = eventsWhithDestination.map(({destination}) => destinations.find((allDestination) => allDestination.id === destination).name);
 
   const eventsPrices = events.map((event) => {
     if (event.offers.length === 0) {
@@ -34,7 +36,7 @@ function createInfoTemplate(events, offers) {
   return (
     `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
-      <h1 class="trip-info__title">${createInfoTitleTemplate(eventsWhithDestination)}</h1>
+      <h1 class="trip-info__title">${createInfoTitleTemplate(eventsDestinations)}</h1>
       <p class="trip-info__dates">${getInfoDatesTemplate(eventsWhithDateFrom[0].dateFrom, eventsWhithDateTo[eventsWhithDateTo.length - 1].dateTo)}</p>
     </div>
     <p class="trip-info__cost">
@@ -46,15 +48,17 @@ function createInfoTemplate(events, offers) {
 
 export default class InfoView extends AbstractView {
   #events = [];
+  #destinations = [];
   #offers = [];
 
-  constructor({events, offers}) {
+  constructor({events, destinations, offers}) {
     super();
     this.#events = events;
+    this.#destinations = destinations;
     this.#offers = offers;
   }
 
   get template() {
-    return createInfoTemplate(this.#events, this.#offers);
+    return createInfoTemplate(this.#events, this.#destinations, this.#offers);
   }
 }
