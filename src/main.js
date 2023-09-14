@@ -40,7 +40,6 @@ const infoPresenter = new InfoPresenter({
   eventsModel,
   destinationsModel,
   offersModel,
-  onBoardEventsChange: getBoardEvents,
 });
 
 addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
@@ -52,10 +51,6 @@ function handleNewEventFormClose() {
 function handleNewEventButtonClick() {
   boardPresenter.createEvent();
   addEventButtonElement.disabled = true;
-}
-
-function getBoardEvents () {
-  return boardPresenter.events;
 }
 
 filterPresenter.init();

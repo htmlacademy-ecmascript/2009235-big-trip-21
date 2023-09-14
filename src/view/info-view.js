@@ -1,24 +1,34 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {getInfoDatesTemplate} from '../utils/event.js';
 
+const MAX_DESTINATIONS_COUNT = 3;
+
 function createInfoTitleTemplate (eventsDestinations) {
   if (eventsDestinations.length === 0) {
-    return 'No events whith destination';
+    return '';
   }
 
-  if (eventsDestinations.length <= 3) {
+  if (eventsDestinations.length <= MAX_DESTINATIONS_COUNT) {
     return `${eventsDestinations.map((destination, index) => index === 0 ? `${destination}` : ` — ${destination}`).join('')}`;
   }
 
   return `${eventsDestinations[0]} — ... — ${eventsDestinations[eventsDestinations.length - 1]}`;
 }
 
-function createInfoTemplate(events, destinations, offers) {
-  const eventsWhithDateFrom = events.filter(({dateFrom}) => dateFrom !== null);
-  const eventsWhithDateTo = events.filter(({dateTo}) => dateTo !== null);
-  const eventsWhithDestination = events.filter(({destination}) => (destination !== null) && (destination !== ''));
+function createInfoDatesTemplate (eventsWithDateFrom, eventsWithDateTo) {
+  if (eventsWithDateFrom.length > 0 && eventsWithDateTo.length > 0) {
+    return getInfoDatesTemplate(eventsWithDateFrom[0].dateFrom, eventsWithDateTo[eventsWithDateTo.length - 1].dateTo);
+  }
 
-  const eventsDestinations = eventsWhithDestination.map(({destination}) => destinations.find((allDestination) => allDestination.id === destination).name);
+  return '';
+}
+
+function createInfoTemplate(events, destinations, offers) {
+  const eventsWithDateFrom = events.filter(({dateFrom}) => dateFrom !== null);
+  const eventsWithDateTo = events.filter(({dateTo}) => dateTo !== null);
+  const eventsWithDestination = events.filter(({destination}) => (destination !== null) && (destination !== ''));
+
+  const eventsDestinations = eventsWithDestination.map(({destination}) => destinations.find((allDestination) => allDestination.id === destination).name);
 
   const eventsPrices = events.map((event) => {
     if (event.offers.length === 0) {
@@ -37,7 +47,7 @@ function createInfoTemplate(events, destinations, offers) {
     `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${createInfoTitleTemplate(eventsDestinations)}</h1>
-      <p class="trip-info__dates">${getInfoDatesTemplate(eventsWhithDateFrom[0].dateFrom, eventsWhithDateTo[eventsWhithDateTo.length - 1].dateTo)}</p>
+      <p class="trip-info__dates">${createInfoDatesTemplate (eventsWithDateFrom, eventsWithDateTo)}</p>
     </div>
     <p class="trip-info__cost">
       Total: €&nbsp;<span class="trip-info__cost-value">${eventsTotalPrice}</span>

@@ -122,7 +122,7 @@ export default class BoardPresenter {
     }
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = (actionType, updateType, updatedEvent) => {
     // Здесь будем вызывать обновление модели.
     // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
     // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
@@ -130,23 +130,23 @@ export default class BoardPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(updateType, update);
+        this.#eventsModel.updateEvent(updateType, updatedEvent);
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(updateType, update);
+        this.#eventsModel.addEvent(updateType, updatedEvent);
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteEvent(updateType, update);
+        this.#eventsModel.deleteEvent(updateType, updatedEvent);
         break;
     }
   };
 
-  #handleModelEvent = (updateType, data) => {
+  #handleModelEvent = (updateType, event) => {
     // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
-        this.#eventPresenters.get(data.id).init(data);
+        this.#eventPresenters.get(event.id).init(event);
         break;
       case UpdateType.MINOR:
         // - обновить список (добавление/удаление)

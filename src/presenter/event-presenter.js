@@ -3,7 +3,7 @@ import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import {isEscapeKey} from '../utils/common.js';
 import {UserAction, UpdateType} from '../const.js';
-import {isDatesEqual} from '../utils/event.js';
+import {areDatesEqual} from '../utils/event.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -137,8 +137,8 @@ export default class EventPresenter {
 
   #handleEventEditSubmit = (updatedEvent) => {
 
-    const isMinorUpdate = !isDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
-    !isDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
+    const isMinorUpdate = !areDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
+    !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,

@@ -37,7 +37,7 @@ const getInfoDatesTemplate = (firstDate, lastDate) => {
 };
 
 //проверка на изменение даты, для выяснения попадает ли задача под фильт
-const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+const areDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
 const heEncode = (value) => he.encode(value);
 
@@ -49,6 +49,6 @@ export {
   getDateDifference,
   getEventDuration,
   getInfoDatesTemplate,
-  isDatesEqual,
+  areDatesEqual,
   heEncode,
 };

@@ -230,7 +230,7 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__reset-btn')
       .addEventListener('click', this.#eventEditResetHandler);
 
-    if (this.#isAddEvent === false) {
+    if (!this.#isAddEvent) {
       this.element
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#eventEditRollupHandler);
