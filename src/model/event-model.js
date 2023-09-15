@@ -13,7 +13,7 @@ export default class EventsModel extends Observable {
     this.#apiService = apiService;
 
     this.#apiService.events.then((events) => {
-      console.log(events);
+      console.log(events.map(this.#adaptToClient), this.#events);
       // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
       // а ещё на сервере используется snake_case, а у нас camelCase.
       // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
@@ -60,5 +60,21 @@ export default class EventsModel extends Observable {
     this.#events = this.#events.filter((_, index) => index !== deletedEventIndex);
 
     this._notify(updateType);
+  }
+
+  #adaptToClient(event) {
+    const adaptedEvent = {...event,
+      basePrice: event['base_price'],
+      dateFrom: event['date_from'] !== null ? new Date(event['date_from']) : event['date_from'],
+      dateTo: event['date_to'] !== null ? new Date(event['date_to']) : event['date_to'],
+      isFavorite: event['is_favorite'],
+    };
+
+    delete adaptedEvent['base_price'];
+    delete adaptedEvent['date_from'];
+    delete adaptedEvent['date_to'];
+    delete adaptedEvent['is_favorite'];
+
+    return adaptedEvent;
   }
 }
