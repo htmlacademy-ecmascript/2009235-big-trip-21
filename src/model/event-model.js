@@ -5,10 +5,20 @@ const EVENTS_COUNT = 4;
 
 export default class EventsModel extends Observable {
   #events = [];
+  #apiService = null;
 
-  constructor () {
+  constructor ({apiService}) {
     super();
     this.#events = Array.from({length: EVENTS_COUNT}, createEvent);
+    this.#apiService = apiService;
+
+    this.#apiService.events.then((events) => {
+      console.log(events);
+      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+      // а ещё на сервере используется snake_case, а у нас camelCase.
+      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+      // Есть вариант получше - паттерн "Адаптер"
+    });
   }
 
   get events() {

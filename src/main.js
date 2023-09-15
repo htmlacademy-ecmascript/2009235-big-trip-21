@@ -7,6 +7,11 @@ import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filters-model.js';
 
+import EventsApiService from './events-api-service.js';
+
+const AUTHORIZATION = 'Basic hjdfksjdbfjhs2j';
+const BASE_URL = 'https://21.objects.pages.academy/big-trip';
+
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
@@ -15,9 +20,10 @@ const addEventButtonElement = siteHeaderElement.querySelector('.trip-main__event
 const siteMainElement = document.querySelector('.page-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-const eventsModel = new EventsModel();
-const destinationsModel = new DestinationsModel();
-const offersModel = new OffersModel();
+const eventsModel = new EventsModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const destinationsModel = new DestinationsModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const offersModel = new OffersModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+
 const filterModel = new FilterModel();
 
 const boardPresenter = new BoardPresenter({

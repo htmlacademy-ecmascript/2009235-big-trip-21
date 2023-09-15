@@ -2,7 +2,9 @@ import ApiService from './framework/api-service.js';
 
 const Method = {
   GET: 'GET',
+  POST: 'POST',
   PUT: 'PUT',
+  DELETE: 'DELETE',
 };
 
 const Path = {
@@ -14,6 +16,16 @@ const Path = {
 export default class EventsApiService extends ApiService {
   get events() {
     return this._load({url: Path.EVENTS})
+      .then(ApiService.parseResponse);
+  }
+
+  get destinations() {
+    return this._load({url: Path.DESTINATIONS})
+      .then(ApiService.parseResponse);
+  }
+
+  get offers() {
+    return this._load({url: Path.OFFERS})
       .then(ApiService.parseResponse);
   }
 
