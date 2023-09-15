@@ -15,9 +15,6 @@ export default class EventPresenter {
   #destinationsModel = null;
   #offersModel = null;
 
-  #boardDestinations = [];
-  #boardOffers = [];
-
   #event = null;
   #eventItemComponent = null;
   #eventEditComponent = null;
@@ -38,25 +35,21 @@ export default class EventPresenter {
   init(event) {
     this.#event = event;
 
-    this.#boardDestinations = [...this.#destinationsModel.destinations];
-    this.#boardOffers = [...this.#offersModel.offers];
-
     const prevEventItemComponent = this.#eventItemComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
-    //this.#offersModel.getByType(event.type) <= this.#boardOffers
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
-      destinations: this.#boardDestinations,
+      destinations: this.#destinationsModel.destinations,
       onEventFavorite: this.#handleEventFavorite,
       onEventRollup: this.#handleEventRollup,
     });
 
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
       onEventEditSubmit: this.#handleEventEditSubmit,
       onEventEditReset: this.#handleEventEditReset,
       onEventEditRollup: this.#handleEventEditRollup,

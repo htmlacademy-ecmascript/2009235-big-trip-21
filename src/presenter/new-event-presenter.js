@@ -10,9 +10,6 @@ export default class NewEventPresenter {
   #destinationsModel = null;
   #offersModel = null;
 
-  #boardDestinations = [];
-  #boardOffers = [];
-
   #handleDataChange = () => {};
   #handleDestroy = () => {};
 
@@ -31,12 +28,9 @@ export default class NewEventPresenter {
       return;
     }
 
-    this.#boardDestinations = [...this.#destinationsModel.destinations];
-    this.#boardOffers = [...this.#offersModel.offers];
-
     this.#eventEditComponent = new EventEditView({
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
       onEventEditSubmit: this.#handleEventEditSubmit,
       onEventEditReset: this.#handleEventEditReset,
     });
