@@ -24,8 +24,8 @@ function createInfoDatesTemplate (eventsWithDateFrom, eventsWithDateTo) {
 }
 
 function createInfoTemplate(events, destinations, offers) {
-  const eventsWithDateFrom = events.filter(({dateFrom}) => dateFrom !== null);
-  const eventsWithDateTo = events.filter(({dateTo}) => dateTo !== null);
+  const eventsWithDateFrom = events.filter(({dateFrom, destination}) => dateFrom !== null && destination !== null && destination !== '');
+  const eventsWithDateTo = events.filter(({dateTo, destination}) => dateTo !== null && destination !== null && destination !== '');
   const eventsWithDestination = events.filter(({destination}) => (destination !== null) && (destination !== ''));
 
   const eventsDestinations = eventsWithDestination.map(({destination}) => destinations.find((allDestination) => allDestination.id === destination).name);
