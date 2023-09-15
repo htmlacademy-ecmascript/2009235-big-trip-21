@@ -7,7 +7,15 @@ import he from 'he';
 const humanizeEventDueDate = (dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) => dueDate ? dayjs(dueDate).format(format) : '';
 
 const isEventFuture = (dueDateFrom) => dueDateFrom && dayjs(dueDateFrom).isAfter(dayjs(), 'D');
-const isEventPresent = (dueDateFrom, dueDateTo) => dueDateFrom && dueDateTo && dayjs(dueDateFrom).isSame(dayjs(), 'D') && dayjs(dueDateTo).isAfter(dayjs(), 'D');
+const isEventPresent = (dueDateFrom, dueDateTo) => {
+  if (!dueDateFrom && !dueDateTo) {
+    return false;
+  }
+
+  const isDateFromBeforeToday = dayjs(dueDateFrom).isSame(dayjs(), 'D') || dayjs(dueDateFrom).isBefore(dayjs(), 'D');
+  const isDateToAfterToday = dayjs(dueDateTo).isSame(dayjs(), 'D') || dayjs(dueDateTo).isAfter(dayjs(), 'D');
+  return isDateFromBeforeToday && isDateToAfterToday;
+};
 const isEventPast = (dueDateTo) => dueDateTo && dayjs(dueDateTo).isBefore(dayjs(), 'D');
 
 const getDateDifference = (dateA, dateB) => dayjs(dateA).diff(dayjs(dateB));
