@@ -1,17 +1,22 @@
-import {getDestinations} from '../mock/destinations.js';
-
-export default class DestinationsModel {
+import Observable from '../framework/observable.js';
+import {UpdateType} from '../const.js';
+export default class DestinationsModel extends Observable {
   #destinations = [];
   #apiService = null;
 
   constructor({apiService}) {
-    this.#destinations = getDestinations();
-
+    super();
     this.#apiService = apiService;
+  }
 
-    this.#apiService.destinations.then((destinations) => {
-      console.log(destinations);
-    });
+  async init() {
+    try {
+      this.#destinations = await this.#apiService.destinations;
+    } catch(err) {
+      this.#destinations = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   get destinations() {

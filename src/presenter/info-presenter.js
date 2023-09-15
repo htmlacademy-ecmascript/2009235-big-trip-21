@@ -23,6 +23,10 @@ export default class EventPresenter {
   }
 
   init() {
+    if (this.events.length === 0) {
+      return;
+    }
+
     const prevInfoComponent = this.#infoComponent;
 
     this.#infoComponent = new InfoView({
@@ -41,11 +45,8 @@ export default class EventPresenter {
   }
 
   #handleModelEvent = () => {
-    if (this.events.length > 0) {
-      this.init();
-    } else {
-      remove(this.#infoComponent);
-      this.#infoComponent = null;
-    }
+    remove(this.#infoComponent);
+    this.#infoComponent = null;
+    this.init();
   };
 }

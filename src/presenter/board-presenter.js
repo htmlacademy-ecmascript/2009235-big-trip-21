@@ -25,6 +25,9 @@ export default class BoardPresenter {
   #noEventsComponent = null;
   #onNewEventDestroy = () => {};
 
+  #isLoading = true;
+  #loadingComponent = new EventsMessageView(MessageType.LOADING);
+
   constructor({boardContainer, eventsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy}) {
     this.#boardContainer = boardContainer;
     this.#eventsModel = eventsModel;
@@ -68,6 +71,11 @@ export default class BoardPresenter {
     //const events = this.events;
     //const eventsCount = events.length; //убраны константы для изменения значений
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (this.events.length === 0) {
       this.#renderNoEvents();
       return;
@@ -109,12 +117,17 @@ export default class BoardPresenter {
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer);
+  }
+
   #clearBoard({resetSortType = false} = {}) {
     this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noEventsComponent);
 
     if (resetSortType) {
@@ -156,6 +169,11 @@ export default class BoardPresenter {
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
         this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }

@@ -20,6 +20,8 @@ const addEventButtonElement = siteHeaderElement.querySelector('.trip-main__event
 const siteMainElement = document.querySelector('.page-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
+addEventButtonElement.disabled = true;
+
 const eventsModel = new EventsModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
 const destinationsModel = new DestinationsModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
 const offersModel = new OffersModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
@@ -62,3 +64,10 @@ function handleNewEventButtonClick() {
 filterPresenter.init();
 boardPresenter.init();
 infoPresenter.init();
+
+offersModel.init();
+destinationsModel.init();
+eventsModel.init()
+  .finally(() => {
+    addEventButtonElement.disabled = false;
+  });

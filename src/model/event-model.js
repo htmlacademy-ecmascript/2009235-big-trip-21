@@ -1,7 +1,5 @@
-import {createEvent} from '../mock/events.js';
 import Observable from '../framework/observable.js';
-
-const EVENTS_COUNT = 4;
+import {UpdateType} from '../const.js';
 
 export default class EventsModel extends Observable {
   #events = [];
@@ -9,20 +7,22 @@ export default class EventsModel extends Observable {
 
   constructor ({apiService}) {
     super();
-    this.#events = Array.from({length: EVENTS_COUNT}, createEvent);
     this.#apiService = apiService;
-
-    this.#apiService.events.then((events) => {
-      console.log(events.map(this.#adaptToClient), this.#events);
-      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-      // а ещё на сервере используется snake_case, а у нас camelCase.
-      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-      // Есть вариант получше - паттерн "Адаптер"
-    });
   }
 
   get events() {
     return this.#events;
+  }
+
+  async init() {
+    try {
+      const events = await this.#apiService.events;
+      this.#events = events.map(this.#adaptToClient);
+    } catch(err) {
+      this.#events = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   updateEvent(updateType, updatedEvent) {
