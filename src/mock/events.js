@@ -10,9 +10,9 @@ import {nanoid} from 'nanoid';
 
 const eventDatesFrom = [
   '2023-07-10T20:55:56.845Z',
-  '2023-07-10T21:55:56.845Z',
-  '2024-07-10T22:55:56.845Z',
-  '2024-07-10T23:55:56.845Z',
+  '2023-07-11T21:55:56.845Z',
+  '2023-07-12T22:55:56.845Z',
+  '2023-07-13T23:55:56.845Z',
 ];
 
 const eventDatesTo = [
@@ -45,7 +45,7 @@ const createEvent = () => ({
   basePrice: getRandomInteger(1000, 10000),
   dateFrom: new Date(getRandomArrayElement(eventDatesFrom)),
   dateTo: new Date(getRandomArrayElement(eventDatesTo)),
-  destination: getRandomArrayElement(eventDestinations).name,
+  destination: getRandomArrayElement(eventDestinations).id,
   isFavorite: getRandomBoolean(),
   type: addRandomnType(),
   offers: generateOffersID(offerType),

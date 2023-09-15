@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {humanizeEventDueDate} from '../utils/event.js';
+import {humanizeEventDueDate, heEncode} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
 import flatpickr from 'flatpickr';
 
@@ -7,13 +7,12 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_EVENT = {
   basePrice: 0,
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  destination: 'Amsterdam',
+  dateFrom: null,
+  dateTo: null,
+  destination: '',
   isFavorite: false,
   offers: [],
-  type: 'taxi',
-  add: true,
+  type: 'flight',
 };
 
 function createEventAddButtonsTemplate() {
@@ -92,11 +91,24 @@ function createEventEditTypeTemplate(offers, currentOfferType) {
   return '';
 }
 
+function createEventDetails (eventAllOffers, eventOffers, eventDestination) {
+  if (eventAllOffers.length > 0 || eventDestination) {
+    return (
+      `<section class="event__details">
+      ${createEventOffersTemplate(eventAllOffers, eventOffers)}
+      ${createEventDestinationsTemplate(eventDestination)}
+      </section>`
+    );
+  }
 
-function createEventEditTemplate(event, destinations, offers) {
-  const {basePrice, dateFrom, dateTo, currentDestination, add, currentOfferType} = event;
+  return '';
+}
 
-  const eventDestination = destinations.find((allDestination) => allDestination.name.toLowerCase() === currentDestination.toLowerCase());
+function createEventEditTemplate(event, destinations, offers, isAddEvent) {
+  const {basePrice, dateFrom, dateTo, currentDestination, currentOfferType} = event;
+
+  const eventDestination = destinations.find((destination) => destination.id === currentDestination);
+  const eventDestinationName = eventDestination ? eventDestination.name : currentDestination;
   const eventAllOffers = offers.find((allOffer) => allOffer.type.toLowerCase() === currentOfferType.toLowerCase()).offers;
 
   const startDateTimeInInput = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_INPUT);
@@ -125,7 +137,7 @@ function createEventEditTemplate(event, destinations, offers) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${currentOfferType}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${currentDestination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${heEncode(eventDestinationName)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinations.map((destination) => `<option value="${destination.name}"></option>`).join('')}
           </datalist>
@@ -144,15 +156,12 @@ function createEventEditTemplate(event, destinations, offers) {
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="[0-9]" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="^[ 0-9]+$" value="${basePrice}">
         </div>
 
-        ${add ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
+        ${isAddEvent ? createEventAddButtonsTemplate() : createEventEditButtonsTemplate()}
       </header>
-      <section class="event__details">
-      ${createEventOffersTemplate(eventAllOffers, event.offers)}
-      ${createEventDestinationsTemplate(eventDestination)}
-      </section>
+      ${createEventDetails(eventAllOffers, event.offers, eventDestination)}
     </form>
   </li>`
   );
@@ -163,6 +172,7 @@ export default class EventEditView extends AbstractStatefulView {
   #offers = [];
   #datepickerFrom = null;
   #datepickerTo = null;
+  #isAddEvent = null;
 
   #handleEventEditSubmit = () => {};
   #handleEventEditReset = () => {};
@@ -180,6 +190,7 @@ export default class EventEditView extends AbstractStatefulView {
     this._setState(EventEditView.parseEventToState(event));
     this.#destinations = destinations;
     this.#offers = offers;
+    this.#isAddEvent = event === BLANK_EVENT;
 
     this.#handleEventEditSubmit = onEventEditSubmit;
     this.#handleEventEditReset = onEventEditReset;
@@ -219,7 +230,7 @@ export default class EventEditView extends AbstractStatefulView {
       .querySelector('.event__reset-btn')
       .addEventListener('click', this.#eventEditResetHandler);
 
-    if (!this._state.add) {
+    if (!this.#isAddEvent) {
       this.element
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#eventEditRollupHandler);
@@ -237,7 +248,7 @@ export default class EventEditView extends AbstractStatefulView {
 
     /*-------*/
     this.element.querySelector('.event__input--destination')
-      .addEventListener('input', this.#destinationInputHandler);
+      .addEventListener('change', this.#destinationInputHandler);
 
     this.element.querySelector('.event__input--price')
       .addEventListener('input', this.#basePriceInputHandler);
@@ -246,9 +257,10 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventEditTemplate(this._state, this.#destinations, this.#offers);
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#isAddEvent);
   }
 
+  /*-----*/
   #eventEditSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditSubmit(EventEditView.parseStateToEvent(this._state));
@@ -256,7 +268,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventEditResetHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEventEditReset();
+    this.#handleEventEditReset(EventEditView.parseStateToEvent(this._state));
   };
 
   #eventEditRollupHandler = (evt) => {
@@ -292,12 +304,21 @@ export default class EventEditView extends AbstractStatefulView {
   /*-------*/
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
+    //если destination не выбран, то какое значение должно быть null или '' ?
     if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
+      const newEventDestination = this.#destinations.find(({name}) => name === evt.target.value).id;
+      this.updateElement({
+        currentDestination: newEventDestination,
+      });
+      this._setState({
+        destination: newEventDestination,
+      });
+    } else {
       this.updateElement({
         currentDestination: evt.target.value,
       });
       this._setState({
-        destination: evt.target.value,
+        destination: '',
       });
     }
   };
@@ -306,7 +327,7 @@ export default class EventEditView extends AbstractStatefulView {
     evt.preventDefault();
     if (/^[ 0-9]+$/i.test(evt.target.value)) {
       this._setState({
-        basePrice: evt.target.value,
+        basePrice: Number(evt.target.value),
       });
     }
   };
@@ -348,6 +369,7 @@ export default class EventEditView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
         onClose: this.#dueDateFromChangeHandler,
       },
     );
@@ -358,6 +380,7 @@ export default class EventEditView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
         onClose: this.#dueDateToChangeHandler,
       },
     );

@@ -8,13 +8,18 @@ const filter = {
   [FilterType.PAST]: (events) => events.filter((event) => isEventPast(event.dateTo)),
 };
 
-function generateFilter() {
-  return Object.keys(filter).map(
-    (filterType, index) => ({
+function generateFilter(events) {
+  return Object.entries(filter).map(
+    ([filterType, filterEvents]) => ({
       type: filterType,
-      isChecked: index === 0,
+      count: filterEvents(events).length,
     }),
   );
 }
 
-export {generateFilter};
+const startFilter = (events, filterType) => filter[filterType](events);
+
+export {
+  generateFilter,
+  startFilter,
+};

@@ -2,7 +2,7 @@ import {DateTimeFormat, MSEC_IN_HOUR} from '../const.js';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
 dayjs.extend(duration);
-
+import he from 'he';
 
 const humanizeEventDueDate = (dueDate, format = DateTimeFormat.DATE_TIME_IN_ATRIBUT) => dueDate ? dayjs(dueDate).format(format) : '';
 
@@ -24,23 +24,31 @@ const getEventDuration = (dateA, dateB) => {
     case(eventDurationInMillisecond < MSEC_IN_HOUR):
       return dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.MIN);
     default:
-      return 0;
+      return '00M';
   }
 };
 
-/**
-* @param items Набор событий
-* @param update Обновленное событие
-* @returns Обновленный набор событий
-*/
-const updateEventItem = (events, updatedEvent) => events.map((event) => event.id === updatedEvent.id ? updatedEvent : event);
+const getInfoDatesTemplate = (firstDate, lastDate) => {
+  if (dayjs(firstDate).month() === dayjs(lastDate).month() && dayjs(firstDate).year() === dayjs(lastDate).year()) {
+    return `${dayjs(firstDate).format(DateTimeFormat.DATE)} — ${dayjs(lastDate).format(DateTimeFormat.DAY)}`;
+  }
+
+  return `${dayjs(firstDate).format(DateTimeFormat.DATE)} — ${dayjs(lastDate).format(DateTimeFormat.DATE)}`;
+};
+
+//проверка на изменение даты, для выяснения попадает ли задача под фильт
+const areDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+
+const heEncode = (value) => he.encode(value);
 
 export {
   humanizeEventDueDate,
   isEventFuture,
   isEventPresent,
   isEventPast,
-  updateEventItem,
   getDateDifference,
   getEventDuration,
+  getInfoDatesTemplate,
+  areDatesEqual,
+  heEncode,
 };

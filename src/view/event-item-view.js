@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeEventDueDate} from '../utils/event.js';
+import {humanizeEventDueDate, heEncode} from '../utils/event.js';
 import {DateTimeFormat} from '../const.js';
 import {getEventDuration} from '../utils/event.js';
 
@@ -21,8 +21,8 @@ function createEventItemOffersTemplate(eventOffers, eventTypeOffers) {
   return '';
 }
 
-function createEventItemTemplate(event, eventTypeOffers) {
-  const {basePrice, dateFrom, dateTo, destination, type, isFavorite, offers} = event;
+function createEventItemTemplate(event, eventTypeOffers, destinations) {
+  const {basePrice, dateFrom, dateTo, type, destination, isFavorite, offers} = event;
 
   const startTimeInContent = humanizeEventDueDate(dateFrom, DateTimeFormat.TIME);
   const startTimeInAtribut = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_TIME_IN_ATRIBUT);
@@ -33,6 +33,9 @@ function createEventItemTemplate(event, eventTypeOffers) {
   const dateInContent = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE);
   const dateInAtribut = humanizeEventDueDate(dateFrom, DateTimeFormat.DATE_IN_ATRIBUT);
 
+  const eventDestination = destinations.find((allDestination) => allDestination.id === destination);
+  const eventDestinationName = eventDestination ? eventDestination.name : '';
+
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
   return (
@@ -42,12 +45,12 @@ function createEventItemTemplate(event, eventTypeOffers) {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination}</h3>
+      <h3 class="event__title">${type} ${heEncode(eventDestinationName)}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${startTimeInAtribut}">${startTimeInContent}</time>
+          <time class="event__start-time" datetime="${startTimeInAtribut}">${startTimeInContent ? startTimeInContent : '&infin;'}</time>
           —
-          <time class="event__end-time" datetime="${endTimeInAtribut}">${endTimeInContent}</time>
+          <time class="event__end-time" datetime="${endTimeInAtribut}">${endTimeInContent ? endTimeInContent : '&infin;'}</time>
         </p>
         <p class="event__duration">${getEventDuration(dateTo, dateFrom)}</p>
       </div>
@@ -72,13 +75,15 @@ function createEventItemTemplate(event, eventTypeOffers) {
 export default class EventItemView extends AbstractView {
   #event = [];
   #eventTypeOffers = [];
+  #destinations = [];
   #handleEventFavorite = () => {};
   #handleEventRollup = () => {};
 
-  constructor({event, eventTypeOffers, onEventFavorite, onEventRollup}) {
+  constructor({event, eventTypeOffers, destinations, onEventFavorite, onEventRollup}) {
     super();
     this.#event = event;
     this.#eventTypeOffers = eventTypeOffers;
+    this.#destinations = destinations;
     this.#handleEventFavorite = onEventFavorite;
     this.#handleEventRollup = onEventRollup;
 
@@ -92,7 +97,7 @@ export default class EventItemView extends AbstractView {
   }
 
   get template() {
-    return createEventItemTemplate(this.#event, this.#eventTypeOffers);
+    return createEventItemTemplate(this.#event, this.#eventTypeOffers, this.#destinations);
   }
 
   #eventFavoriteHandler = (evt) => {

@@ -2,6 +2,8 @@ import {render, replace, remove} from '../framework/render.js';
 import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import {isEscapeKey} from '../utils/common.js';
+import {UserAction, UpdateType} from '../const.js';
+import {areDatesEqual} from '../utils/event.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -46,6 +48,7 @@ export default class EventPresenter {
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
+      destinations: this.#boardDestinations,
       onEventFavorite: this.#handleEventFavorite,
       onEventRollup: this.#handleEventRollup,
     });
@@ -111,34 +114,46 @@ export default class EventPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  #removeCard() {
-    remove(this.#eventEditComponent);
-  }
-
   #handleEventRollup = () => {
     this.#replaceCardToForm();
   };
 
   #handleEventFavorite = () => {
-    this.#handleDataChange({
-      ...this.#event,
-      isFavorite: !this.#event.isFavorite
-    });
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      {
+        ...this.#event,
+        isFavorite: !this.#event.isFavorite
+      }
+    );
   };
 
   /*--------*/
 
   #handleEventEditRollup = () => {
-    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
-  #handleEventEditSubmit = (event) => {
-    this.#handleDataChange(event);
+  #handleEventEditSubmit = (updatedEvent) => {
+
+    const isMinorUpdate = !areDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
+    !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      updatedEvent,
+    );
+
     this.#replaceFormToCard();
   };
 
-  #handleEventEditReset = () => {
-    this.#removeCard();
+  #handleEventEditReset = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
   };
 }
