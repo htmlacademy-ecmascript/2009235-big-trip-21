@@ -137,21 +137,33 @@ export default class BoardPresenter {
     }
   }
 
-  #handleViewAction = (actionType, updateType, updatedEvent) => {
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+  #handleViewAction = async (actionType, updateType, event) => {
+    // обновление модели.
 
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(updateType, updatedEvent);
+        this.#eventPresenters.get(event.id).setSaving();
+        try {
+          await this.#eventsModel.updateEvent(updateType, event);
+        } catch(err) {
+          this.#eventPresenters.get(event.id).setAborting();
+        }
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(updateType, updatedEvent);
+        this.#newEventPresenter.setSaving();
+        try {
+          await this.#eventsModel.addEvent(updateType, event);
+        } catch(err) {
+          this.#newEventPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteEvent(updateType, updatedEvent);
+        this.#eventPresenters.get(event.id).setDeleting();
+        try {
+          await this.#eventsModel.deleteEvent(updateType, event);
+        } catch(err) {
+          this.#eventPresenters.get(event.id).setAborting();
+        }
         break;
     }
   };
