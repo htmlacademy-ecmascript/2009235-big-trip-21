@@ -164,7 +164,6 @@ export default class EventPresenter {
   };
 
   #handleEventEditSubmit = (updatedEvent) => {
-
     const isMinorUpdate = !areDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
     !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
 

@@ -32,6 +32,8 @@ export default class BoardPresenter {
 
   #isLoading = true;
   #loadingComponent = new EventsMessageView(MessageType.LOADING);
+  #failedToLoadComponent = new EventsMessageView(MessageType.FAILED_DATA_LOAD);
+
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeUiBlockerLimit.LOWER_LIMIT,
     upperLimit: TimeUiBlockerLimit.UPPER_LIMIT
@@ -55,8 +57,6 @@ export default class BoardPresenter {
 
     //обработчик-наблюдатель, который реагирует на изменения модели this.#eventsModel и вызывает #handleModelEvent
     this.#eventsModel.addObserver(this.#handleModelEvent);
-    this.#offersModel.addObserver(this.#handleModelEvent);
-    this.#destinationsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
@@ -73,10 +73,25 @@ export default class BoardPresenter {
   }
 
   createEvent() {
+    //нужно отрисовать лист, в который помешяется #newEventPresenter (в случае если с сервера пришло 0 эвентов)
+    if (this.#eventsListComponent) {
+      this.#renderListComponent();
+    }
+
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if (this.#noEventsComponent) {
+      remove(this.#noEventsComponent);
+    }
     this.#newEventPresenter.init();
   }
+
+  ifNoEventsShowMessage = () => {
+    if (this.events.length === 0) {
+      this.#renderNoEvents();
+    }
+  };
 
   #renderBoard() {
     //const events = this.events;
@@ -87,19 +102,35 @@ export default class BoardPresenter {
       return;
     }
 
+    //если нет эвентов , показываем сообшение для FilterType.EVERYTHING
+    /*if (this.#eventsModel.events.length === 0 && this.#filterModel.filter !== FilterType.EVERYTHING) {
+      this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+      return;
+    }*/
+
+    //если нет эвентов , показываем сообшение для FilterType.EVERYTHING
+    if (this.#eventsModel.events.length === 0) {
+      this.#renderNoEvents(FilterType.EVERYTHING);
+      return;
+    }
+
     if (this.events.length === 0) {
       this.#renderNoEvents();
       return;
     }
 
     this.#renderSort();
-    render(this.#eventsListComponent, this.#boardContainer);
+    this.#renderListComponent();
     this.#renderEvents(this.events);
   }
 
-  #renderNoEvents() {
-    this.#noEventsComponent = new EventsMessageView(MessageType[this.#filterType]);
+  #renderNoEvents(filerType = this.#filterType) {
+    this.#noEventsComponent = new EventsMessageView(MessageType[filerType]);
     render(this.#noEventsComponent, this.#boardContainer);
+  }
+
+  #renderListComponent() {
+    render(this.#eventsListComponent, this.#boardContainer);
   }
 
   #renderSort() {
@@ -130,6 +161,12 @@ export default class BoardPresenter {
 
   #renderLoading() {
     render(this.#loadingComponent, this.#boardContainer);
+  }
+
+  //рендер сообщения ошибки загрузки данных
+  renderFailedToLoad() {
+    this.#clearBoard();
+    render(this.#failedToLoadComponent, this.#boardContainer);
   }
 
   #clearBoard({resetSortType = false} = {}) {
@@ -198,11 +235,6 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
       case UpdateType.INIT:
-        //пока все необходимы данные для рабты не загрузим, оставляем loading...
-        //console.log(this.#offersModel.offers.length, this.#destinationsModel.destinations.length, this.#eventsModel.events.length);
-        if (this.#offersModel.offers.length === 0 || this.#destinationsModel.destinations.length === 0 || this.#eventsModel.events.length === 0) {
-          return;
-        }
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();

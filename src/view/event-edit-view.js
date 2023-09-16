@@ -26,7 +26,7 @@ function createEventEditButtonsTemplate(isDisabled, isSaving, isDeleting) {
   return (
     `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
     <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
-    <button class="event__rollup-btn" type="button">
+    <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
       <span class="visually-hidden">Open event</span>
     </button>`
   );
@@ -156,7 +156,7 @@ function createEventEditTemplate(event, destinations, offers, isAddEvent) {
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" pattern="^[ 0-9]+$" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         ${isAddEvent ? createEventAddButtonsTemplate(isDisabled, isSaving) : createEventEditButtonsTemplate(isDisabled, isSaving, isDeleting)}

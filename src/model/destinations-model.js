@@ -1,5 +1,4 @@
 import Observable from '../framework/observable.js';
-import {UpdateType} from '../const.js';
 export default class DestinationsModel extends Observable {
   #destinations = [];
   #apiService = null;
@@ -14,9 +13,8 @@ export default class DestinationsModel extends Observable {
       this.#destinations = await this.#apiService.destinations;
     } catch(err) {
       this.#destinations = [];
+      throw new Error('no destinations');
     }
-
-    this._notify(UpdateType.INIT);
   }
 
   get destinations() {

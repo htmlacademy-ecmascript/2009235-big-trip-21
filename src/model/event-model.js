@@ -20,6 +20,7 @@ export default class EventsModel extends Observable {
       this.#events = events.map(this.#adaptToClient);
     } catch(err) {
       this.#events = [];
+      throw new Error('no events');
     }
 
     this._notify(UpdateType.INIT);

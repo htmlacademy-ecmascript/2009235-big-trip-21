@@ -44,7 +44,7 @@ const disabledSortType = {
 
 const MessageType = {
   LOADING: 'Loading...',
-  FAILED_EVENTS_LOAD: 'Failed to load latest route information',
+  FAILED_DATA_LOAD: 'Failed to load latest route information',
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
   [FilterType.FUTURE]: 'There are no future events now',
   [FilterType.PRESENT]: 'There are no present events now',

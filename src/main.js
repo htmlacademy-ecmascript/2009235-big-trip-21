@@ -53,6 +53,7 @@ const infoPresenter = new InfoPresenter({
 addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
 
 function handleNewEventFormClose() {
+  boardPresenter.ifNoEventsShowMessage();
   addEventButtonElement.disabled = false;
 }
 
@@ -65,9 +66,11 @@ filterPresenter.init();
 boardPresenter.init();
 infoPresenter.init();
 
-offersModel.init();
-destinationsModel.init();
-eventsModel.init()
-  .finally(() => {
+Promise.all([
+  offersModel.init(),
+  destinationsModel.init(),
+]).then(() => Promise.all([eventsModel.init()])
+  .then(() => {
     addEventButtonElement.disabled = false;
-  });
+  })
+) .catch(() => boardPresenter.renderFailedToLoad());

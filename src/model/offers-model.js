@@ -1,5 +1,4 @@
 import Observable from '../framework/observable.js';
-import {UpdateType} from '../const.js';
 
 export default class OffersModel extends Observable {
   #offers = [];
@@ -15,9 +14,8 @@ export default class OffersModel extends Observable {
       this.#offers = await this.#apiService.offers;
     } catch(err) {
       this.#offers = [];
+      throw new Error('no events');
     }
-
-    this._notify(UpdateType.INIT);
   }
 
   get offers() {
