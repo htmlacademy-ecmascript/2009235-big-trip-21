@@ -7,7 +7,12 @@ import SortView from '../view/sort-view.js';
 import {startSort, generateSort} from '../utils/sort.js';
 import {startFilter} from '../utils/filter.js';
 import NewEventPresenter from './new-event-presenter.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
+const TimeUiBlockerLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
@@ -27,6 +32,10 @@ export default class BoardPresenter {
 
   #isLoading = true;
   #loadingComponent = new EventsMessageView(MessageType.LOADING);
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeUiBlockerLimit.LOWER_LIMIT,
+    upperLimit: TimeUiBlockerLimit.UPPER_LIMIT
+  });
 
   constructor({boardContainer, eventsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy}) {
     this.#boardContainer = boardContainer;
@@ -139,6 +148,7 @@ export default class BoardPresenter {
 
   #handleViewAction = async (actionType, updateType, event) => {
     // обновление модели.
+    this.#uiBlocker.block();
 
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
@@ -166,6 +176,8 @@ export default class BoardPresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, event) => {
