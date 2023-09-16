@@ -1,6 +1,5 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../const.js';
 import {isEscapeKey} from '../utils/common.js';
 
@@ -57,9 +56,7 @@ export default class NewEventPresenter {
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...addedEvent},
+      addedEvent,
     );
     this.destroy();
   };

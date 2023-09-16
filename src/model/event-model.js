@@ -47,25 +47,36 @@ export default class EventsModel extends Observable {
     }
   }
 
-  addEvent(updateType, addedEvent) {
-    this.#events = [
-      addedEvent,
-      ...this.#events,
-    ];
+  async addEvent(updateType, addedEvent) {
+    try {
+      const response = await this.#apiService.addEvent(addedEvent);
+      const addedEventOnServer = this.#adaptToClient(response);
+      this.#events = [
+        addedEventOnServer,
+        ...this.#events,
+      ];
 
-    this._notify(updateType, addedEvent);
+      this._notify(updateType, addedEventOnServer);
+    } catch(err) {
+      throw new Error('Can\'t add event');
+    }
   }
 
-  deleteEvent(updateType, deletedEvent) {
+  async deleteEvent(updateType, deletedEvent) {
     const deletedEventIndex = this.#events.findIndex((event) => event.id === deletedEvent.id);
 
     if (deletedEventIndex === -1) {
       throw new Error('Can\'t delete unexisting event');
     }
 
-    this.#events = this.#events.filter((_, index) => index !== deletedEventIndex);
+    try {
+      await this.#apiService.deleteEvent(deletedEvent);
+      this.#events = this.#events.filter((_, index) => index !== deletedEventIndex);
 
-    this._notify(updateType);
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete event');
+    }
   }
 
   #adaptToClient(event) {
