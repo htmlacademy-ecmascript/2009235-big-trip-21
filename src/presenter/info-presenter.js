@@ -16,6 +16,8 @@ export default class EventPresenter {
     this.#offersModel = offersModel;
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
@@ -23,7 +25,7 @@ export default class EventPresenter {
   }
 
   init() {
-    if (this.events.length === 0) {
+    if (this.events.length === 0 || this.#offersModel.offers.length === 0 || this.#destinationsModel.destinations.length === 0) {
       return;
     }
 

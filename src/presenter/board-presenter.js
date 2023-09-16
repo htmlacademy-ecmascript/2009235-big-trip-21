@@ -46,6 +46,8 @@ export default class BoardPresenter {
 
     //обработчик-наблюдатель, который реагирует на изменения модели this.#eventsModel и вызывает #handleModelEvent
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
@@ -172,6 +174,11 @@ export default class BoardPresenter {
         this.#renderBoard();
         break;
       case UpdateType.INIT:
+        //пока все необходимы данные для рабты не загрузим, оставляем loading...
+        //console.log(this.#offersModel.offers.length, this.#destinationsModel.destinations.length, this.#eventsModel.events.length);
+        if (this.#offersModel.offers.length === 0 || this.#destinationsModel.destinations.length === 0 || this.#eventsModel.events.length === 0) {
+          return;
+        }
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#renderBoard();
