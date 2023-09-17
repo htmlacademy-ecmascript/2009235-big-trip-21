@@ -1,16 +1,16 @@
 import Observable from '../framework/observable.js';
 export default class DestinationsModel extends Observable {
   #destinations = [];
-  #apiService = null;
+  #eventsApiService = null;
 
-  constructor({apiService}) {
+  constructor({eventsApiService}) {
     super();
-    this.#apiService = apiService;
+    this.#eventsApiService = eventsApiService;
   }
 
   async init() {
     try {
-      this.#destinations = await this.#apiService.destinations;
+      this.#destinations = await this.#eventsApiService.destinations;
     } catch(err) {
       this.#destinations = [];
       throw new Error('Can\'t download destinations from the server');

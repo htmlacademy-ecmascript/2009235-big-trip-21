@@ -3,11 +3,11 @@ import {UpdateType} from '../const.js';
 
 export default class EventsModel extends Observable {
   #events = [];
-  #apiService = null;
+  #eventsApiService = null;
 
-  constructor ({apiService}) {
+  constructor ({eventsApiService}) {
     super();
-    this.#apiService = apiService;
+    this.#eventsApiService = eventsApiService;
   }
 
   get events() {
@@ -16,7 +16,7 @@ export default class EventsModel extends Observable {
 
   async init() {
     try {
-      const events = await this.#apiService.events;
+      const events = await this.#eventsApiService.events;
       this.#events = events.map(this.#adaptToClient);
     } catch(err) {
       this.#events = [];
@@ -34,7 +34,7 @@ export default class EventsModel extends Observable {
     }
 
     try {
-      const response = await this.#apiService.updateEvent(updatedEvent);
+      const response = await this.#eventsApiService.updateEvent(updatedEvent);
       const updatedEventOnServer = this.#adaptToClient(response);
       this.#events = [
         ...this.#events.slice(0, index),
@@ -50,7 +50,7 @@ export default class EventsModel extends Observable {
 
   async addEvent(updateType, addedEvent) {
     try {
-      const response = await this.#apiService.addEvent(addedEvent);
+      const response = await this.#eventsApiService.addEvent(addedEvent);
       const addedEventOnServer = this.#adaptToClient(response);
       this.#events = [
         addedEventOnServer,
@@ -71,7 +71,7 @@ export default class EventsModel extends Observable {
     }
 
     try {
-      await this.#apiService.deleteEvent(deletedEvent);
+      await this.#eventsApiService.deleteEvent(deletedEvent);
       this.#events = this.#events.filter((_, index) => index !== deletedEventIndex);
 
       this._notify(updateType);

@@ -2,16 +2,16 @@ import Observable from '../framework/observable.js';
 
 export default class OffersModel extends Observable {
   #offers = [];
-  #apiService = null;
+  #eventsApiService = null;
 
-  constructor({apiService}) {
+  constructor({eventsApiService}) {
     super();
-    this.#apiService = apiService;
+    this.#eventsApiService = eventsApiService;
   }
 
   async init() {
     try {
-      this.#offers = await this.#apiService.offers;
+      this.#offers = await this.#eventsApiService.offers;
     } catch(err) {
       this.#offers = [];
       throw new Error('Can\'t download offers from the server');

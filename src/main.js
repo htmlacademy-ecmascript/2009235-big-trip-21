@@ -22,9 +22,9 @@ const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
 addEventButtonElement.disabled = true;
 
-const eventsModel = new EventsModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
-const destinationsModel = new DestinationsModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
-const offersModel = new OffersModel({apiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const eventsModel = new EventsModel({eventsApiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const destinationsModel = new DestinationsModel({eventsApiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const offersModel = new OffersModel({eventsApiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
 
 const filterModel = new FilterModel();
 
