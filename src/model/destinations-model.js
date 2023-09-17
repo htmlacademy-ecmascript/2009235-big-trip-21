@@ -13,7 +13,7 @@ export default class DestinationsModel extends Observable {
       this.#destinations = await this.#apiService.destinations;
     } catch(err) {
       this.#destinations = [];
-      throw new Error('no destinations');
+      throw new Error('Can\'t download destinations from the server');
     }
   }
 

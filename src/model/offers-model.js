@@ -14,7 +14,7 @@ export default class OffersModel extends Observable {
       this.#offers = await this.#apiService.offers;
     } catch(err) {
       this.#offers = [];
-      throw new Error('no events');
+      throw new Error('Can\'t download offers from the server');
     }
   }
 

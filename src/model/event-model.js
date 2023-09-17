@@ -20,7 +20,7 @@ export default class EventsModel extends Observable {
       this.#events = events.map(this.#adaptToClient);
     } catch(err) {
       this.#events = [];
-      throw new Error('no events');
+      throw new Error('Can\'t download events from the server');
     }
 
     this._notify(UpdateType.INIT);

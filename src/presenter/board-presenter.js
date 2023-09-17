@@ -74,6 +74,7 @@ export default class BoardPresenter {
 
   createEvent() {
     //нужно отрисовать лист, в который помешяется #newEventPresenter (в случае если с сервера пришло 0 эвентов)
+    //может убрать в начало #renderBoard()? насколько критична отрисовка лишнего эл-та?
     if (this.#eventsListComponent) {
       this.#renderListComponent();
     }
@@ -101,12 +102,6 @@ export default class BoardPresenter {
       this.#renderLoading();
       return;
     }
-
-    //если нет эвентов , показываем сообшение для FilterType.EVERYTHING
-    /*if (this.#eventsModel.events.length === 0 && this.#filterModel.filter !== FilterType.EVERYTHING) {
-      this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-      return;
-    }*/
 
     //если нет эвентов , показываем сообшение для FilterType.EVERYTHING
     if (this.#eventsModel.events.length === 0) {

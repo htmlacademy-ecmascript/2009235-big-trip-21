@@ -66,11 +66,9 @@ filterPresenter.init();
 boardPresenter.init();
 infoPresenter.init();
 
-Promise.all([
-  offersModel.init(),
-  destinationsModel.init(),
-]).then(() => Promise.all([eventsModel.init()])
+Promise.all([offersModel.init(), destinationsModel.init()])
+  .then(() => eventsModel.init())
   .then(() => {
     addEventButtonElement.disabled = false;
   })
-) .catch(() => boardPresenter.renderFailedToLoad());
+  .catch(() => boardPresenter.renderFailedToLoad());
