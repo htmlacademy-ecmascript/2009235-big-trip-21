@@ -1,7 +1,6 @@
 import {render, replace, remove} from '../framework/render.js';
 import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
-import {isEscapeKey} from '../utils/common.js';
 import {UserAction, UpdateType} from '../const.js';
 import {areDatesEqual} from '../utils/event.js';
 
@@ -79,7 +78,7 @@ export default class EventPresenter {
   }
 
   #onDocumentKeydownEscape = (evt) => {
-    if (isEscapeKey(evt)) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
