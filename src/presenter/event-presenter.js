@@ -3,6 +3,7 @@ import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import {UserAction, UpdateType} from '../const.js';
 import {areDatesEqual} from '../utils/event.js';
+import {isEscapeKey} from '../utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -78,7 +79,7 @@ export default class EventPresenter {
   }
 
   #onDocumentKeydownEscape = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();

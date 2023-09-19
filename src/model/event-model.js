@@ -1,5 +1,6 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../const.js';
+//import {isObjectsDeepEqual, deleteIdKey} from '../utils/common.js';
 
 export default class EventsModel extends Observable {
   #events = [];
@@ -35,15 +36,20 @@ export default class EventsModel extends Observable {
 
     try {
       const response = await this.#eventsApiService.updateEvent(updatedEvent);
-      const updatedEventOnServer = this.#adaptToClient(response);
-      //console.log(updatedEventOnServer === updatedEvent);
+      const updatedEventFromServer = this.#adaptToClient(response);
+
+      /*if(!isObjectsDeepEqual(updatedEventFromServer, updatedEvent)) {
+        await this.#eventsApiService.deleteEvent(updatedEventFromServer);
+        throw new Error('Can\'t update event. Request and response don\'t match');
+      }*/
+
       this.#events = [
         ...this.#events.slice(0, index),
-        updatedEventOnServer,
+        updatedEventFromServer,
         ...this.#events.slice(index + 1),
       ];
 
-      this._notify(updateType, updatedEventOnServer);
+      this._notify(updateType, updatedEventFromServer);
     } catch(err) {
       throw new Error('Can\'t update event');
     }
@@ -52,13 +58,19 @@ export default class EventsModel extends Observable {
   async addEvent(updateType, addedEvent) {
     try {
       const response = await this.#eventsApiService.addEvent(addedEvent);
-      const addedEventOnServer = this.#adaptToClient(response);
+      const addedEventFromServer = this.#adaptToClient(response);
+
+      /*if(!isObjectsDeepEqual(deleteIdKey(addedEventFromServer), addedEvent)) {
+        await this.#eventsApiService.deleteEvent(addedEventFromServer);
+        throw new Error('Can\'t update event. Request and response don\'t match');
+      }*/
+
       this.#events = [
-        addedEventOnServer,
+        addedEventFromServer,
         ...this.#events,
       ];
 
-      this._notify(updateType, addedEventOnServer);
+      this._notify(updateType, addedEventFromServer);
     } catch(err) {
       throw new Error('Can\'t add event');
     }
