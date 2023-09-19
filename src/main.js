@@ -7,6 +7,11 @@ import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filters-model.js';
 
+import EventsApiService from './events-api-service.js';
+
+const AUTHORIZATION = 'Basic hjdfksjdbfjhs2j';
+const BASE_URL = 'https://21.objects.pages.academy/big-trip';
+
 const siteHeaderElement = document.querySelector('.page-header');
 const tripMainElement = siteHeaderElement.querySelector('.trip-main');
 const tripFiltersElement = siteHeaderElement.querySelector('.trip-controls__filters');
@@ -15,9 +20,12 @@ const addEventButtonElement = siteHeaderElement.querySelector('.trip-main__event
 const siteMainElement = document.querySelector('.page-main');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-const eventsModel = new EventsModel();
-const destinationsModel = new DestinationsModel();
-const offersModel = new OffersModel();
+addEventButtonElement.disabled = true;
+
+const eventsModel = new EventsModel({eventsApiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const destinationsModel = new DestinationsModel({eventsApiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+const offersModel = new OffersModel({eventsApiService: new EventsApiService(BASE_URL, AUTHORIZATION)});
+
 const filterModel = new FilterModel();
 
 const boardPresenter = new BoardPresenter({
@@ -45,6 +53,7 @@ const infoPresenter = new InfoPresenter({
 addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
 
 function handleNewEventFormClose() {
+  boardPresenter.showNoEventsMessage();
   addEventButtonElement.disabled = false;
 }
 
@@ -56,3 +65,10 @@ function handleNewEventButtonClick() {
 filterPresenter.init();
 boardPresenter.init();
 infoPresenter.init();
+
+Promise.all([offersModel.init(), destinationsModel.init()])
+  .then(() => eventsModel.init())
+  .then(() => {
+    addEventButtonElement.disabled = false;
+  })
+  .catch(() => boardPresenter.renderFailedToLoad());

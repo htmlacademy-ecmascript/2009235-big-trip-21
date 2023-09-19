@@ -1,17 +1,12 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../const.js';
-import {isEscapeKey} from '../utils/common.js';
 
 export default class NewEventPresenter {
   #eventsListContainer = null;
 
   #destinationsModel = null;
   #offersModel = null;
-
-  #boardDestinations = [];
-  #boardOffers = [];
 
   #handleDataChange = () => {};
   #handleDestroy = () => {};
@@ -31,12 +26,9 @@ export default class NewEventPresenter {
       return;
     }
 
-    this.#boardDestinations = [...this.#destinationsModel.destinations];
-    this.#boardOffers = [...this.#offersModel.offers];
-
     this.#eventEditComponent = new EventEditView({
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
       onEventEditSubmit: this.#handleEventEditSubmit,
       onEventEditReset: this.#handleEventEditReset,
     });
@@ -59,15 +51,31 @@ export default class NewEventPresenter {
     document.removeEventListener('keydown', this.#onDocumentKeydownEscape);
   }
 
+  setSaving() {
+    this.#eventEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  }
+
   #handleEventEditSubmit = (addedEvent) => {
     this.#handleDataChange(
       UserAction.ADD_EVENT,
       UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...addedEvent},
+      addedEvent,
     );
-    this.destroy();
   };
 
   #handleEventEditReset = () => {
@@ -75,7 +83,7 @@ export default class NewEventPresenter {
   };
 
   #onDocumentKeydownEscape = (evt) => {
-    if (isEscapeKey(evt)) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.destroy();
     }

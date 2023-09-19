@@ -1,7 +1,6 @@
 import {render, replace, remove} from '../framework/render.js';
 import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
-import {isEscapeKey} from '../utils/common.js';
 import {UserAction, UpdateType} from '../const.js';
 import {areDatesEqual} from '../utils/event.js';
 
@@ -14,9 +13,6 @@ export default class EventPresenter {
 
   #destinationsModel = null;
   #offersModel = null;
-
-  #boardDestinations = [];
-  #boardOffers = [];
 
   #event = null;
   #eventItemComponent = null;
@@ -38,25 +34,21 @@ export default class EventPresenter {
   init(event) {
     this.#event = event;
 
-    this.#boardDestinations = [...this.#destinationsModel.destinations];
-    this.#boardOffers = [...this.#offersModel.offers];
-
     const prevEventItemComponent = this.#eventItemComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
-    //this.#offersModel.getByType(event.type) <= this.#boardOffers
     this.#eventItemComponent = new EventItemView({
       event: this.#event,
       eventTypeOffers: this.#offersModel.getByType(event.type),
-      destinations: this.#boardDestinations,
+      destinations: this.#destinationsModel.destinations,
       onEventFavorite: this.#handleEventFavorite,
       onEventRollup: this.#handleEventRollup,
     });
 
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
-      destinations: this.#boardDestinations,
-      offers: this.#boardOffers,
+      destinations: this.#destinationsModel.destinations,
+      offers: this.#offersModel.offers,
       onEventEditSubmit: this.#handleEventEditSubmit,
       onEventEditReset: this.#handleEventEditReset,
       onEventEditRollup: this.#handleEventEditRollup,
@@ -67,14 +59,13 @@ export default class EventPresenter {
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventItemComponent, prevEventItemComponent);
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#eventEditComponent, prevEventEditComponent);
+      replace(this.#eventItemComponent, prevEventEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevEventItemComponent);
@@ -87,7 +78,7 @@ export default class EventPresenter {
   }
 
   #onDocumentKeydownEscape = (evt) => {
-    if (isEscapeKey(evt)) {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
@@ -114,6 +105,42 @@ export default class EventPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#eventEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#eventItemComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  }
+
+  /*--------*/
   #handleEventRollup = () => {
     this.#replaceCardToForm();
   };
@@ -132,11 +159,11 @@ export default class EventPresenter {
   /*--------*/
 
   #handleEventEditRollup = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
   #handleEventEditSubmit = (updatedEvent) => {
-
     const isMinorUpdate = !areDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
     !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
 
@@ -145,8 +172,6 @@ export default class EventPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       updatedEvent,
     );
-
-    this.#replaceFormToCard();
   };
 
   #handleEventEditReset = (event) => {

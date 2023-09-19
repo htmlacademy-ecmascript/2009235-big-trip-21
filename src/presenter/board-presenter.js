@@ -1,4 +1,4 @@
-import {render, remove} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType, UpdateType, UserAction, FilterType} from '../const.js';
@@ -7,7 +7,12 @@ import SortView from '../view/sort-view.js';
 import {startSort, generateSort} from '../utils/sort.js';
 import {startFilter} from '../utils/filter.js';
 import NewEventPresenter from './new-event-presenter.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
+const TimeUiBlockerLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 export default class BoardPresenter {
   #boardContainer = null;
   #eventsModel = null;
@@ -24,6 +29,15 @@ export default class BoardPresenter {
   #sortComponent = null;
   #noEventsComponent = null;
   #onNewEventDestroy = () => {};
+
+  #isLoading = true;
+  #loadingComponent = new EventsMessageView(MessageType.LOADING);
+  #failedToLoadComponent = new EventsMessageView(MessageType.FAILED_DATA_LOAD);
+
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeUiBlockerLimit.LOWER_LIMIT,
+    upperLimit: TimeUiBlockerLimit.UPPER_LIMIT
+  });
 
   constructor({boardContainer, eventsModel, destinationsModel, offersModel, filterModel, onNewEventDestroy}) {
     this.#boardContainer = boardContainer;
@@ -59,14 +73,37 @@ export default class BoardPresenter {
   }
 
   createEvent() {
-    this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+
+    if (this.events.length === 0) {
+      remove(this.#noEventsComponent);
+      this.#renderSort();
+    }
+
     this.#newEventPresenter.init();
   }
 
+  showNoEventsMessage = () => {
+    if (this.events.length === 0) {
+      remove(this.#sortComponent);
+      this.#renderNoEvents();
+    }
+  };
+
   #renderBoard() {
     //const events = this.events;
-    //const eventsCount = events.length; //убраны константы для изменения значений
+    render(this.#eventsListComponent, this.#boardContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    //если нет эвентов , показываем сообшение для FilterType.EVERYTHING
+    if (this.#eventsModel.events.length === 0) {
+      this.#renderNoEvents(FilterType.EVERYTHING);
+      return;
+    }
 
     if (this.events.length === 0) {
       this.#renderNoEvents();
@@ -74,12 +111,11 @@ export default class BoardPresenter {
     }
 
     this.#renderSort();
-    render(this.#eventsListComponent, this.#boardContainer);
     this.#renderEvents(this.events);
   }
 
-  #renderNoEvents() {
-    this.#noEventsComponent = new EventsMessageView(MessageType[this.#filterType]);
+  #renderNoEvents(filerType = this.#filterType) {
+    this.#noEventsComponent = new EventsMessageView(MessageType[filerType]);
     render(this.#noEventsComponent, this.#boardContainer);
   }
 
@@ -90,7 +126,7 @@ export default class BoardPresenter {
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
-    render(this.#sortComponent, this.#boardContainer);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderEvents(events) {
@@ -109,12 +145,23 @@ export default class BoardPresenter {
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#boardContainer);
+  }
+
+  //рендер сообщения ошибки загрузки данных
+  renderFailedToLoad() {
+    this.#clearBoard();
+    render(this.#failedToLoadComponent, this.#boardContainer);
+  }
+
   #clearBoard({resetSortType = false} = {}) {
     this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noEventsComponent);
 
     if (resetSortType) {
@@ -122,23 +169,38 @@ export default class BoardPresenter {
     }
   }
 
-  #handleViewAction = (actionType, updateType, updatedEvent) => {
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+  #handleViewAction = async (actionType, updateType, event) => {
+    // обновление модели.
+    this.#uiBlocker.block();
 
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
-        this.#eventsModel.updateEvent(updateType, updatedEvent);
+        this.#eventPresenters.get(event.id).setSaving();
+        try {
+          await this.#eventsModel.updateEvent(updateType, event);
+        } catch(err) {
+          this.#eventPresenters.get(event.id).setAborting();
+        }
         break;
       case UserAction.ADD_EVENT:
-        this.#eventsModel.addEvent(updateType, updatedEvent);
+        this.#newEventPresenter.setSaving();
+        try {
+          await this.#eventsModel.addEvent(updateType, event);
+        } catch(err) {
+          this.#newEventPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_EVENT:
-        this.#eventsModel.deleteEvent(updateType, updatedEvent);
+        this.#eventPresenters.get(event.id).setDeleting();
+        try {
+          await this.#eventsModel.deleteEvent(updateType, event);
+        } catch(err) {
+          this.#eventPresenters.get(event.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, event) => {
@@ -156,6 +218,11 @@ export default class BoardPresenter {
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
         this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }
