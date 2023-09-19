@@ -33,12 +33,10 @@ function createEventEditButtonsTemplate(isDisabled, isSaving, isDeleting) {
 }
 
 function createEventDestinationsTemplate(eventDestination) {
-  if (eventDestination) {
+  if (eventDestination ? eventDestination.description || eventDestination.pictures.length > 0 : false) {
     return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      ${eventDestination.description ?
-    `<p class="event__destination-description">${eventDestination.description}</p>`
-    : ''}
+      ${eventDestination.description ? `<p class="event__destination-description">${eventDestination.description}</p>` : ''}
 
       ${eventDestination.pictures.length > 0 ?
     `<div class="event__photos-container">
@@ -92,7 +90,7 @@ function createEventEditTypeTemplate(offers, currentOfferType) {
 }
 
 function createEventDetails (eventAllOffers, eventOffers, eventDestination, isDisabled) {
-  if (eventAllOffers.length > 0 || eventDestination) {
+  if (eventAllOffers.length > 0 || (eventDestination ? eventDestination.description || eventDestination.pictures.length > 0 : false)) {
     return (
       `<section class="event__details">
       ${createEventOffersTemplate(eventAllOffers, eventOffers, isDisabled)}
@@ -284,6 +282,7 @@ export default class EventEditView extends AbstractStatefulView {
     });
     this._setState({
       type: evt.target.value,
+      offers: [],
     });
   };
 
@@ -304,7 +303,6 @@ export default class EventEditView extends AbstractStatefulView {
   /*-------*/
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
-    //если destination не выбран, то какое значение должно быть null или '' ?
     if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
       const newEventDestination = this.#destinations.find(({name}) => name === evt.target.value).id;
       this.updateElement({
@@ -377,6 +375,7 @@ export default class EventEditView extends AbstractStatefulView {
         defaultDate: this._state.dateFrom,
         maxDate: this._state.dateTo,
         onClose: this.#dueDateFromChangeHandler,
+        dateFormat: 'd/m/y H:i',
       },
     );
 
@@ -388,6 +387,7 @@ export default class EventEditView extends AbstractStatefulView {
         defaultDate: this._state.dateTo,
         minDate: this._state.dateFrom,
         onClose: this.#dueDateToChangeHandler,
+        dateFormat: 'd/m/y H:i',
       },
     );
   }

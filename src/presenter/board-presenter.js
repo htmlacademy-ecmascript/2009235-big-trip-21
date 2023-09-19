@@ -1,4 +1,4 @@
-import {render, remove} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import EventsListView from '../view/events-list-view.js';
 import EventsMessageView from '../view/events-message-view.js';
 import {MessageType, SortType, UpdateType, UserAction, FilterType} from '../const.js';
@@ -73,30 +73,26 @@ export default class BoardPresenter {
   }
 
   createEvent() {
-    //нужно отрисовать лист, в который помешяется #newEventPresenter (в случае если с сервера пришло 0 эвентов)
-    //может убрать в начало #renderBoard()? насколько критична отрисовка лишнего эл-та?
-    if (this.#eventsListComponent) {
-      this.#renderListComponent();
-    }
-
-    this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
-    if (this.#noEventsComponent) {
+    if (this.events.length === 0) {
       remove(this.#noEventsComponent);
+      this.#renderSort();
     }
+
     this.#newEventPresenter.init();
   }
 
-  ifNoEventsShowMessage = () => {
+  showNoEventsMessage = () => {
     if (this.events.length === 0) {
+      remove(this.#sortComponent);
       this.#renderNoEvents();
     }
   };
 
   #renderBoard() {
     //const events = this.events;
-    //const eventsCount = events.length; //убраны константы для изменения значений
+    render(this.#eventsListComponent, this.#boardContainer);
 
     if (this.#isLoading) {
       this.#renderLoading();
@@ -115,17 +111,12 @@ export default class BoardPresenter {
     }
 
     this.#renderSort();
-    this.#renderListComponent();
     this.#renderEvents(this.events);
   }
 
   #renderNoEvents(filerType = this.#filterType) {
     this.#noEventsComponent = new EventsMessageView(MessageType[filerType]);
     render(this.#noEventsComponent, this.#boardContainer);
-  }
-
-  #renderListComponent() {
-    render(this.#eventsListComponent, this.#boardContainer);
   }
 
   #renderSort() {
@@ -135,7 +126,7 @@ export default class BoardPresenter {
       onSortTypeChange: this.#handleSortTypeChange,
     });
 
-    render(this.#sortComponent, this.#boardContainer);
+    render(this.#sortComponent, this.#boardContainer, RenderPosition.AFTERBEGIN);
   }
 
   #renderEvents(events) {

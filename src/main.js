@@ -53,7 +53,7 @@ const infoPresenter = new InfoPresenter({
 addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
 
 function handleNewEventFormClose() {
-  boardPresenter.ifNoEventsShowMessage();
+  boardPresenter.showNoEventsMessage();
   addEventButtonElement.disabled = false;
 }
 

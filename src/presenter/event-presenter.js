@@ -159,6 +159,7 @@ export default class EventPresenter {
   /*--------*/
 
   #handleEventEditRollup = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
