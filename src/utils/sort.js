@@ -42,13 +42,11 @@ const sort = {
   },
 };
 
-function generateSort() {
-  return Object.values(SortType)
-    .map((sortType) => ({
-      type: sortType,
-      isDisabled: disabledSortType[sortType],
-    }));
-}
+const generateSort = () => Object.values(SortType)
+  .map((sortType) => ({
+    type: sortType,
+    isDisabled: disabledSortType[sortType],
+  }));
 
 const startSort = (events, sortType) => sort[sortType](events);
 

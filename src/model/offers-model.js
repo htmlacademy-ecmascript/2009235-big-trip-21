@@ -9,6 +9,10 @@ export default class OffersModel extends Observable {
     this.#eventsApiService = eventsApiService;
   }
 
+  get offers() {
+    return this.#offers;
+  }
+
   async init() {
     try {
       this.#offers = await this.#eventsApiService.offers;
@@ -16,10 +20,6 @@ export default class OffersModel extends Observable {
       this.#offers = [];
       throw new Error('Can\'t download offers from the server');
     }
-  }
-
-  get offers() {
-    return this.#offers;
   }
 
   getByType(eventType) {

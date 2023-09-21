@@ -83,15 +83,19 @@ export default class BoardPresenter {
     this.#newEventPresenter.init();
   }
 
-  showNoEventsMessage = () => {
+  renderNoEventsMessage = () => {
     if (this.events.length === 0) {
       remove(this.#sortComponent);
       this.#renderNoEvents();
     }
   };
 
+  renderFailedToLoad() {
+    this.#clearBoard();
+    render(this.#failedToLoadComponent, this.#boardContainer);
+  }
+
   #renderBoard() {
-    //const events = this.events;
     render(this.#eventsListComponent, this.#boardContainer);
 
     if (this.#isLoading) {
@@ -147,12 +151,6 @@ export default class BoardPresenter {
 
   #renderLoading() {
     render(this.#loadingComponent, this.#boardContainer);
-  }
-
-  //рендер сообщения ошибки загрузки данных
-  renderFailedToLoad() {
-    this.#clearBoard();
-    render(this.#failedToLoadComponent, this.#boardContainer);
   }
 
   #clearBoard({resetSortType = false} = {}) {

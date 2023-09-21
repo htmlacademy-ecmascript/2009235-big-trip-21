@@ -8,6 +8,10 @@ export default class DestinationsModel extends Observable {
     this.#eventsApiService = eventsApiService;
   }
 
+  get destinations() {
+    return this.#destinations;
+  }
+
   async init() {
     try {
       this.#destinations = await this.#eventsApiService.destinations;
@@ -15,9 +19,5 @@ export default class DestinationsModel extends Observable {
       this.#destinations = [];
       throw new Error('Can\'t download destinations from the server');
     }
-  }
-
-  get destinations() {
-    return this.#destinations;
   }
 }

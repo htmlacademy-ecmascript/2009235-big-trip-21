@@ -1,6 +1,6 @@
 import Observable from '../framework/observable.js';
 import {UpdateType} from '../const.js';
-//import {isObjectsDeepEqual, deleteIdKey} from '../utils/common.js';
+import EventAdapter from '../adapters/event-adapter.js';
 
 export default class EventsModel extends Observable {
   #events = [];
@@ -18,7 +18,7 @@ export default class EventsModel extends Observable {
   async init() {
     try {
       const events = await this.#eventsApiService.events;
-      this.#events = events.map(this.#adaptToClient);
+      this.#events = events.map(EventAdapter.adaptToClient);
     } catch(err) {
       this.#events = [];
       throw new Error('Can\'t download events from the server');
@@ -36,13 +36,7 @@ export default class EventsModel extends Observable {
 
     try {
       const response = await this.#eventsApiService.updateEvent(updatedEvent);
-      const updatedEventFromServer = this.#adaptToClient(response);
-
-      /*if(!isObjectsDeepEqual(updatedEventFromServer, updatedEvent)) {
-        await this.#eventsApiService.deleteEvent(updatedEventFromServer);
-        throw new Error('Can\'t update event. Request and response don\'t match');
-      }*/
-
+      const updatedEventFromServer = EventAdapter.adaptToClient(response);
       this.#events = [
         ...this.#events.slice(0, index),
         updatedEventFromServer,
@@ -58,13 +52,7 @@ export default class EventsModel extends Observable {
   async addEvent(updateType, addedEvent) {
     try {
       const response = await this.#eventsApiService.addEvent(addedEvent);
-      const addedEventFromServer = this.#adaptToClient(response);
-
-      /*if(!isObjectsDeepEqual(deleteIdKey(addedEventFromServer), addedEvent)) {
-        await this.#eventsApiService.deleteEvent(addedEventFromServer);
-        throw new Error('Can\'t update event. Request and response don\'t match');
-      }*/
-
+      const addedEventFromServer = EventAdapter.adaptToClient(response);
       this.#events = [
         addedEventFromServer,
         ...this.#events,
@@ -85,27 +73,11 @@ export default class EventsModel extends Observable {
 
     try {
       await this.#eventsApiService.deleteEvent(deletedEvent);
-      this.#events = this.#events.filter((_, index) => index !== deletedEventIndex);
+      this.#events = this.#events.filter((event) => event.id !== deletedEvent.id);
 
       this._notify(updateType);
     } catch(err) {
       throw new Error('Can\'t delete event');
     }
-  }
-
-  #adaptToClient(event) {
-    const adaptedEvent = {...event,
-      basePrice: event['base_price'],
-      dateFrom: event['date_from'] !== null ? new Date(event['date_from']) : event['date_from'],
-      dateTo: event['date_to'] !== null ? new Date(event['date_to']) : event['date_to'],
-      isFavorite: event['is_favorite'],
-    };
-
-    delete adaptedEvent['base_price'];
-    delete adaptedEvent['date_from'];
-    delete adaptedEvent['date_to'];
-    delete adaptedEvent['is_favorite'];
-
-    return adaptedEvent;
   }
 }
