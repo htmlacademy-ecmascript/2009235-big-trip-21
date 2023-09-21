@@ -55,7 +55,6 @@ export default class BoardPresenter {
       onDestroy: this.#onNewEventDestroy,
     });
 
-    //обработчик-наблюдатель, который реагирует на изменения модели this.#eventsModel и вызывает #handleModelEvent
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -103,7 +102,6 @@ export default class BoardPresenter {
       return;
     }
 
-    //если нет эвентов , показываем сообшение для FilterType.EVERYTHING
     if (this.#eventsModel.events.length === 0) {
       this.#renderNoEvents(FilterType.EVERYTHING);
       return;
@@ -168,7 +166,6 @@ export default class BoardPresenter {
   }
 
   #handleViewAction = async (actionType, updateType, event) => {
-    // обновление модели.
     this.#uiBlocker.block();
 
     switch (actionType) {
@@ -202,19 +199,15 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, event) => {
-    // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this.#eventPresenters.get(event.id).init(event);
         break;
       case UpdateType.MINOR:
-        // - обновить список (добавление/удаление)
         this.#clearBoard();
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
         this.#clearBoard({resetSortType: true});
         this.#renderBoard();
         break;

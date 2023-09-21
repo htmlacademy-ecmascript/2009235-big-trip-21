@@ -120,7 +120,6 @@ export default class EventPresenter {
     this.#eventEditComponent.shake(resetFormState);
   }
 
-  /*-----*/
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventItemComponent);
     document.addEventListener('keydown', this.#onDocumentKeydownEscape);
@@ -134,7 +133,6 @@ export default class EventPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  /*--------*/
   #onDocumentKeydownEscape = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
@@ -157,8 +155,6 @@ export default class EventPresenter {
       }
     );
   };
-
-  /*--------*/
 
   #handleEventEditRollup = () => {
     this.#eventEditComponent.reset(this.#event);

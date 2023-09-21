@@ -44,7 +44,6 @@ const getInfoDatesTemplate = (firstDate, lastDate) => {
   return `${dayjs(firstDate).format(DateTimeFormat.DATE)} — ${dayjs(lastDate).format(DateTimeFormat.DATE)}`;
 };
 
-//проверка на изменение даты, для выяснения попадает ли задача под фильт (dayjs(dateA).isSame(dateB, 'D'))
 const areDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
 
 const heEncode = (value) => he.encode(value);

@@ -201,8 +201,6 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#isAddEvent);
   }
 
-  // Перегружаем метод родителя removeElement,
-  // чтобы при удалении удалялся более не нужный календарь
   removeElement() {
     super.removeElement();
 
@@ -237,7 +235,7 @@ export default class EventEditView extends AbstractStatefulView {
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#eventEditRollupHandler);
     }
-    /*-------*/
+
     this.element
       .querySelector('.event__type-group')
       .addEventListener('change', this.#eventEditTypeHandler);
@@ -248,7 +246,6 @@ export default class EventEditView extends AbstractStatefulView {
         .addEventListener('change', this.#eventEditOffersHandler);
     }
 
-    /*-------*/
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationInputHandler);
 
@@ -258,7 +255,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setDatepicker();
   }
 
-  /*-----*/
   #eventEditSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleEventEditSubmit(EventEditView.parseStateToEvent(this._state));
@@ -274,7 +270,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleEventEditRollup();
   };
 
-  /*--------*/
   #eventEditTypeHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
@@ -300,7 +295,6 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  /*-------*/
   #destinationInputHandler = (evt) => {
     evt.preventDefault();
     if (this.#destinations.map(({name}) => name).includes(evt.target.value)) {
@@ -330,7 +324,6 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  /*----*/
   #dueDateFromChangeHandler = ([dateStart]) => {
     this.updateElement({
       dateFrom: dateStart,
@@ -369,7 +362,6 @@ export default class EventEditView extends AbstractStatefulView {
     );
   }
 
-  /*----------*/
   static parseEventToState(event) {
     return {...event,
       currentOfferType: event.type,
