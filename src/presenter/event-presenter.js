@@ -167,12 +167,12 @@ export default class EventPresenter {
 
   #handleEventEditSubmit = (updatedEvent) => {
     const isMinorUpdate = !areDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
-    !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
+    !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo) ||
+    this.#event.basePrice !== updatedEvent.basePrice;
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      //UpdateType.MINOR, // нужно только для рабочего теста
       updatedEvent,
     );
   };
