@@ -26,13 +26,13 @@ const getEventDuration = (dateA, dateB) => {
 
   switch (true) {
     case(allDaysCount >= 1):
-      return `${Math.trunc(allDaysCount).toString().padStart(2, '0')}D ${dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.HOUR_MIN)}`;
+      return `${Math.trunc(allDaysCount).toString().padStart(2, '0')}d ${dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.HOUR_MIN)}`;
     case(eventDurationInMillisecond >= MSEC_IN_HOUR):
       return dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.HOUR_MIN);
     case(eventDurationInMillisecond < MSEC_IN_HOUR):
       return dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.MIN);
     default:
-      return '00M';
+      return '00m';
   }
 };
 
@@ -44,7 +44,6 @@ const getInfoDatesTemplate = (firstDate, lastDate) => {
   return `${dayjs(firstDate).format(DateTimeFormat.DATE)} — ${dayjs(lastDate).format(DateTimeFormat.DATE)}`;
 };
 
-//проверка на изменение даты, для выяснения попадает ли задача под фильт (dayjs(dateA).isSame(dateB, 'D'))
 const areDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
 
 const heEncode = (value) => he.encode(value);

@@ -120,7 +120,6 @@ export default class EventPresenter {
     this.#eventEditComponent.shake(resetFormState);
   }
 
-  /*-----*/
   #replaceCardToForm() {
     replace(this.#eventEditComponent, this.#eventItemComponent);
     document.addEventListener('keydown', this.#onDocumentKeydownEscape);
@@ -134,7 +133,6 @@ export default class EventPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
-  /*--------*/
   #onDocumentKeydownEscape = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
@@ -158,8 +156,6 @@ export default class EventPresenter {
     );
   };
 
-  /*--------*/
-
   #handleEventEditRollup = () => {
     this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToCard();
@@ -167,12 +163,12 @@ export default class EventPresenter {
 
   #handleEventEditSubmit = (updatedEvent) => {
     const isMinorUpdate = !areDatesEqual(this.#event.dateFrom, updatedEvent.dateFrom) ||
-    !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo);
+    !areDatesEqual(this.#event.dateTo, updatedEvent.dateTo) ||
+    this.#event.basePrice !== updatedEvent.basePrice;
 
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      //UpdateType.MINOR, // нужно только для рабочего теста
       updatedEvent,
     );
   };
