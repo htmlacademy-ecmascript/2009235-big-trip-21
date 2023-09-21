@@ -197,6 +197,10 @@ export default class EventEditView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  get template() {
+    return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#isAddEvent);
+  }
+
   // Перегружаем метод родителя removeElement,
   // чтобы при удалении удалялся более не нужный календарь
   removeElement() {
@@ -252,10 +256,6 @@ export default class EventEditView extends AbstractStatefulView {
       .addEventListener('input', this.#basePriceInputHandler);
 
     this.#setDatepicker();
-  }
-
-  get template() {
-    return createEventEditTemplate(this._state, this.#destinations, this.#offers, this.#isAddEvent);
   }
 
   /*-----*/
@@ -330,29 +330,6 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  /*----------*/
-  static parseEventToState(event) {
-    return {...event,
-      currentOfferType: event.type,
-      currentDestination: event.destination,
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false,
-    };
-  }
-
-  static parseStateToEvent(state) {
-    const event = {...state};
-
-    delete event.currentOfferType;
-    delete event.currentDestination;
-    delete event.isDisabled;
-    delete event.isSaving;
-    delete event.isDeleting;
-
-    return event;
-  }
-
   /*----*/
   #dueDateFromChangeHandler = ([dateStart]) => {
     this.updateElement({
@@ -390,5 +367,28 @@ export default class EventEditView extends AbstractStatefulView {
         dateFormat: 'd/m/y H:i',
       },
     );
+  }
+
+  /*----------*/
+  static parseEventToState(event) {
+    return {...event,
+      currentOfferType: event.type,
+      currentDestination: event.destination,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  }
+
+  static parseStateToEvent(state) {
+    const event = {...state};
+
+    delete event.currentOfferType;
+    delete event.currentDestination;
+    delete event.isDisabled;
+    delete event.isSaving;
+    delete event.isDeleting;
+
+    return event;
   }
 }
