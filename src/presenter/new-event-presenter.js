@@ -1,6 +1,7 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EventEditView from '../view/event-edit-view.js';
 import {UserAction, UpdateType} from '../const.js';
+import {isEscapeKey} from '../utils/common.js';
 
 export default class NewEventPresenter {
   #eventsListContainer = null;
@@ -83,7 +84,7 @@ export default class NewEventPresenter {
   };
 
   #onDocumentKeydownEscape = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.destroy();
     }

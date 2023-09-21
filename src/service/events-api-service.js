@@ -1,4 +1,5 @@
-import ApiService from './framework/api-service.js';
+import ApiService from '../framework/api-service.js';
+import EventAdapter from '../adapters/event-adapter.js';
 
 const Method = {
   GET: 'GET',
@@ -14,11 +15,6 @@ const Path = {
 };
 
 export default class EventsApiService extends ApiService {
-  get events() {
-    return this._load({url: Path.EVENTS})
-      .then(ApiService.parseResponse);
-  }
-
   get destinations() {
     return this._load({url: Path.DESTINATIONS})
       .then(ApiService.parseResponse);
@@ -29,11 +25,16 @@ export default class EventsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
+  get events() {
+    return this._load({url: Path.EVENTS})
+      .then(ApiService.parseResponse);
+  }
+
   async updateEvent(event) {
     const response = await this._load({
       url: `${Path.EVENTS}/${event.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this.#adaptToServer(event)),
+      body: JSON.stringify(EventAdapter.adaptToServer(event)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -46,7 +47,7 @@ export default class EventsApiService extends ApiService {
     const response = await this._load({
       url: Path.EVENTS,
       method: Method.POST,
-      body: JSON.stringify(this.#adaptToServer(event)),
+      body: JSON.stringify(EventAdapter.adaptToServer(event)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
@@ -62,21 +63,5 @@ export default class EventsApiService extends ApiService {
     });
 
     return response;
-  }
-
-  #adaptToServer(event) {
-    const adaptedEvent = {...event,
-      'base_price': event.basePrice,
-      'date_from': event.dateFrom instanceof Date ? event.dateFrom.toISOString() : null,
-      'date_to': event.dateTo instanceof Date ? event.dateTo.toISOString() : null,
-      'is_favorite': event.isFavorite,
-    };
-
-    delete adaptedEvent.basePrice;
-    delete adaptedEvent.dateFrom;
-    delete adaptedEvent.dateTo;
-    delete adaptedEvent.isFavorite;
-
-    return adaptedEvent;
   }
 }

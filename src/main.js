@@ -7,7 +7,7 @@ import DestinationsModel from './model/destinations-model.js';
 import OffersModel from './model/offers-model.js';
 import FilterModel from './model/filters-model.js';
 
-import EventsApiService from './events-api-service.js';
+import EventsApiService from './service/events-api-service.js';
 
 const AUTHORIZATION = 'Basic hjdfksjdbfjhs2j';
 const BASE_URL = 'https://21.objects.pages.academy/big-trip';
@@ -53,7 +53,7 @@ const infoPresenter = new InfoPresenter({
 addEventButtonElement.addEventListener('click', handleNewEventButtonClick);
 
 function handleNewEventFormClose() {
-  boardPresenter.showNoEventsMessage();
+  boardPresenter.renderNoEventsMessage();
   addEventButtonElement.disabled = false;
 }
 

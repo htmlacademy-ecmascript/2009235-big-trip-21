@@ -8,14 +8,11 @@ const filter = {
   [FilterType.PAST]: (events) => events.filter((event) => isEventPast(event.dateTo)),
 };
 
-function generateFilter(events) {
-  return Object.entries(filter).map(
-    ([filterType, filterEvents]) => ({
-      type: filterType,
-      count: filterEvents(events).length,
-    }),
-  );
-}
+const generateFilter = (events) => Object.entries(filter)
+  .map(([filterType, filterEvents]) => ({
+    type: filterType,
+    count: filterEvents(events).length,
+  }));
 
 const startFilter = (events, filterType) => filter[filterType](events);
 

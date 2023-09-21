@@ -3,6 +3,7 @@ import EventItemView from '../view/event-item-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import {UserAction, UpdateType} from '../const.js';
 import {areDatesEqual} from '../utils/event.js';
+import {isEscapeKey} from '../utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -77,32 +78,11 @@ export default class EventPresenter {
     remove(this.#eventEditComponent);
   }
 
-  #onDocumentKeydownEscape = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.#eventEditComponent.reset(this.#event);
-      this.#replaceFormToCard();
-    }
-  };
-
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
       this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
-  }
-
-  #replaceCardToForm() {
-    replace(this.#eventEditComponent, this.#eventItemComponent);
-    document.addEventListener('keydown', this.#onDocumentKeydownEscape);
-    this.#handleModeChange();
-    this.#mode = Mode.EDITING;
-  }
-
-  #replaceFormToCard() {
-    replace(this.#eventItemComponent, this.#eventEditComponent);
-    document.removeEventListener('keydown', this.#onDocumentKeydownEscape);
-    this.#mode = Mode.DEFAULT;
   }
 
   setSaving() {
@@ -140,7 +120,29 @@ export default class EventPresenter {
     this.#eventEditComponent.shake(resetFormState);
   }
 
+  /*-----*/
+  #replaceCardToForm() {
+    replace(this.#eventEditComponent, this.#eventItemComponent);
+    document.addEventListener('keydown', this.#onDocumentKeydownEscape);
+    this.#handleModeChange();
+    this.#mode = Mode.EDITING;
+  }
+
+  #replaceFormToCard() {
+    replace(this.#eventItemComponent, this.#eventEditComponent);
+    document.removeEventListener('keydown', this.#onDocumentKeydownEscape);
+    this.#mode = Mode.DEFAULT;
+  }
+
   /*--------*/
+  #onDocumentKeydownEscape = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
+      this.#replaceFormToCard();
+    }
+  };
+
   #handleEventRollup = () => {
     this.#replaceCardToForm();
   };
@@ -170,6 +172,7 @@ export default class EventPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      //UpdateType.MINOR, // нужно только для рабочего теста
       updatedEvent,
     );
   };
