@@ -26,13 +26,13 @@ const getEventDuration = (dateA, dateB) => {
 
   switch (true) {
     case(allDaysCount >= 1):
-      return `${Math.trunc(allDaysCount).toString().padStart(2, '0')}D ${dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.HOUR_MIN)}`;
+      return `${Math.trunc(allDaysCount).toString().padStart(2, '0')}d ${dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.HOUR_MIN)}`;
     case(eventDurationInMillisecond >= MSEC_IN_HOUR):
       return dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.HOUR_MIN);
     case(eventDurationInMillisecond < MSEC_IN_HOUR):
       return dayjs.duration(eventDurationInMillisecond).format(DateTimeFormat.MIN);
     default:
-      return '00M';
+      return '00m';
   }
 };
 

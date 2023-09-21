@@ -5,9 +5,9 @@ const DateTimeFormat = {
   DATE_IN_ATRIBUT: 'DD-MM-YYYY',
   DATE_TIME_IN_ATRIBUT: 'DD-MM-YYYYTHH:mm',
   DATE_TIME_IN_INPUT: 'DD/MM/YYYY HH:mm',
-  DAY_HOUR_MIN: 'DD[D] HH[H] mm[M]',
-  HOUR_MIN: 'HH[H] mm[M]',
-  MIN: 'mm[M]',
+  DAY_HOUR_MIN: 'DD[d] HH[h] mm[m]',
+  HOUR_MIN: 'HH[h] mm[m]',
+  MIN: 'mm[m]',
 };
 
 const MeasureTime = {
