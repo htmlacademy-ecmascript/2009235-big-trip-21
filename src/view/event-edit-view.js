@@ -32,8 +32,8 @@ function createEventEditButtonsTemplate(isDisabled, isSaving, isDeleting) {
   );
 }
 
-function createEventDestinationsTemplate(eventDestination) {
-  if (eventDestination ? eventDestination.description || eventDestination.pictures.length > 0 : false) {
+function createEventDestinationsTemplate(eventDestination, isEventDestinationExist) {
+  if (isEventDestinationExist) {
     return `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       ${eventDestination.description ? `<p class="event__destination-description">${eventDestination.description}</p>` : ''}
@@ -90,11 +90,12 @@ function createEventEditTypeTemplate(offers, currentOfferType) {
 }
 
 function createEventDetails (eventAllOffers, eventOffers, eventDestination, isDisabled) {
-  if (eventAllOffers.length > 0 || (eventDestination ? eventDestination.description || eventDestination.pictures.length > 0 : false)) {
+  const isEventDestinationExist = eventDestination ? eventDestination.description || eventDestination.pictures.length > 0 : false;
+  if (eventAllOffers.length > 0 || isEventDestinationExist) {
     return (
       `<section class="event__details">
       ${createEventOffersTemplate(eventAllOffers, eventOffers, isDisabled)}
-      ${createEventDestinationsTemplate(eventDestination)}
+      ${createEventDestinationsTemplate(eventDestination, isEventDestinationExist)}
       </section>`
     );
   }
