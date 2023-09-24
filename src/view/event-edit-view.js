@@ -318,11 +318,12 @@ export default class EventEditView extends AbstractStatefulView {
 
   #basePriceInputHandler = (evt) => {
     evt.preventDefault();
-    if (/^[ 0-9]+$/i.test(evt.target.value)) {
-      this._setState({
-        basePrice: Number(evt.target.value),
-      });
-    }
+
+    const modifiedToNumbersValue = Number(evt.target.value.replace(/\D/g, '')) === 0 ? '' : Number(evt.target.value.replace(/\D/g, ''));
+    evt.target.value = modifiedToNumbersValue;
+    this._setState({
+      basePrice: modifiedToNumbersValue,
+    });
   };
 
   #dueDateFromChangeHandler = ([dateStart]) => {
